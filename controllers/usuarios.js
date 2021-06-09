@@ -24,7 +24,7 @@ const usuariosPost = async (req, res) => {
 
 
 //actualizar
-const usuariosPut = async(req, res = response) => {
+const usuariosPut = async (req, res = response) => {
   const { id } = req.params;
   const { _id, password, google, correo, ...resto } = req.body;
   //TODO validaciones contra bd
@@ -39,26 +39,38 @@ const usuariosPut = async(req, res = response) => {
 
 
 //GET
-const usuariosGet = async(req = request, res = response) => {
-  const { limite = 5, desde =0 } = req.query;   
-  const usuarios = await Usuario.find()
-        .skip(Number(desde))
-        .limit(Number(limite));
-  res.json({
-    usuarios 
-  });
+const usuariosGet = async (req = request, res = response) => {
+  const { limite = 5, desde = 0 } = req.query;
+  const query = { estado: true };  //solo los usuarios activos en bd
+
+  const [total, usuarios] = await Promise.all([ //envío arreglo, demora menos 
+    Usuario.countDocuments(query),
+    Usuario.find(query)
+      .skip(Number(desde))
+      .limit(Number(limite))
+  ]);
+res.json({
+  total,
+  usuarios
+});
 }
 
 
-const usuariosDelete = (req, res) => {
-  res.json({
-    msg: 'Delete API - Controlador'
-  });
+//Delete
+const usuariosDelete = async (req= request, res= response) => {
+  const { id } = req.params;
+
+  //fisicamente borrado
+  //const usuario = await Usuario.findByIdAndDelete( id );
+
+  const usuario = await Usuario.findByIdAndUpdate( id, { estado: false } );
+
+  res.json(usuario);
 }
 
 module.exports = {
   usuariosGet,
   usuariosPost,
   usuariosPut,
-  usuariosDelete
+  usuariosDelete,
 }
