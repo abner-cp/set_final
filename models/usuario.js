@@ -45,7 +45,8 @@ const UsuarioSchema = Schema({
 
 //metodo sobrescrito 
 UsuarioSchema.methods.toJSON = function() {
-    const { __v, password, ...usuario} = this.toObject(); //se saca el __v y el password, para q no se impriman
+    const { __v, password, _id, ...usuario} = this.toObject(); //se saca el __v y el password, _id, para q no se impriman
+    usuario.uid = _id;
     return usuario;
 }
 

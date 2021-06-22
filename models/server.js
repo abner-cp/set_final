@@ -10,6 +10,7 @@ class Server {
         this.app = express();
         this.PORT = process.env.PORT;
         this.usuariosPath = '/api/usuarios';
+        this.authPath = '/api/auth';
 
         //conectar a BD
         this.conectarDB();
@@ -30,7 +31,7 @@ class Server {
         //CORS
         this.app.use(cors());
 
-        //lectura y parseio body
+        //lectura y parseo body
         this.app.use( express.json() );
 
 
@@ -39,9 +40,10 @@ class Server {
     }
 
     routes(){
+        this.app.use(this.authPath, require('../routes/auth'));
        this.app.use(this.usuariosPath, require('../routes/usuarios'));
-    
     }
+    
 
     listen(){
         this.app.listen(this.PORT, () => {

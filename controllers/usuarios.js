@@ -60,13 +60,15 @@ res.json({
 const usuariosDelete = async (req= request, res= response) => {
   const { id } = req.params;
 
-  //fisicamente borrado
-  //const usuario = await Usuario.findByIdAndDelete( id );
+  const uid = req.uid;
 
   const usuario = await Usuario.findByIdAndUpdate( id, { estado: false } );
 
-  res.json(usuario);
+  res.json( usuario );
 }
+
+
+
 
 module.exports = {
   usuariosGet,
