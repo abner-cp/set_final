@@ -7,8 +7,8 @@ const Usuario = require('../models/usuario');  //modelo class
 
 //POST
 const usuariosPost = async (req, res) => {
-  const { nombre, apellido, correo, password, rol } = req.body;
-  const usuario = new Usuario({ nombre, apellido, correo, password, rol });
+  const { nombre, apellido,celular, correo, password, rol } = req.body;
+  const usuario = new Usuario({ nombre, apellido, celular, correo, password, rol });
 
   //encriptar pass
   const salt = bcryptjs.genSaltSync();
@@ -55,6 +55,15 @@ res.json({
 });
 }
 
+//obtenerUsuario 
+const obtenerUsuario= async(req, res=response)=> {
+  const { id }= req.params;
+  const usuario = await Usuario.findById( id );
+
+  res.json( usuario );
+}
+
+
 
 //Delete
 const usuariosDelete = async (req= request, res= response) => {
@@ -72,6 +81,7 @@ const usuariosDelete = async (req= request, res= response) => {
 
 module.exports = {
   usuariosGet,
+  obtenerUsuario,
   usuariosPost,
   usuariosPut,
   usuariosDelete,

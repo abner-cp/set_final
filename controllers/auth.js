@@ -45,7 +45,7 @@ const login = async (req, res = response) => {
         console.log(error)
         return res.status(500).json({
             msg: 'Hable con el Admin'
-        });
+        }); 
     }
 }
 

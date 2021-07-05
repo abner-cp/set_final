@@ -1,5 +1,5 @@
 const Role = require('../models/role'); // model de los roles de usuario
-const Usuario = require('../models/usuario'); 
+const {Usuario, Turno, Team} = require('../models'); 
 
 
 const esRoleValido = async (rol = '') => {
@@ -26,11 +26,30 @@ const existeUsuarioById = async (id) => {
    }
 }
 
+const existeTurnoById = async (id) => {
+   //verificar id
+   const existeTurno = await Turno.findById( id );
+   if (!existeTurno) {
+        throw new Error(`El Turno: ${ id }, no existe...`);
+   }
+}
+
+
+const existeTeamById = async (id) => {
+   //verificar id
+   const existeTeam = await Team.findById( id );
+   if (!existeTeam) {
+        throw new Error(`El Team: ${ id }, no existe...`);
+   }
+}
+
 
 
 
 module.exports = {
     esRoleValido,
     emailExiste,
-    existeUsuarioById
+    existeUsuarioById,
+    existeTurnoById,
+    existeTeamById,
 }

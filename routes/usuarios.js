@@ -8,13 +8,19 @@ const { validarJWT,
 
 const { esRoleValido, emailExiste, existeUsuarioById } = require('../helpers/db-validators');
 
-const { usuariosGet, usuariosPost, usuariosPut, usuariosDelete } = require('../controllers/usuarios');
+const { usuariosGet, usuariosPost, usuariosPut, usuariosDelete, obtenerUsuario } = require('../controllers/usuarios');
 
 
 
 const router = Router();
 
 router.get('/', usuariosGet);
+
+router.get('/:id',[
+    check('id', 'NO es un ID válido').isMongoId(),
+    check('id').custom(existeUsuarioById),
+    validarCampos
+] ,obtenerUsuario);
 
 router.post('/', [
     check('nombre', 'el nombre no es válido').not().isEmpty(),
