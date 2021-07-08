@@ -12,7 +12,8 @@ class Server {
 
         this.paths= {
             auth: '/api/auth',
-            buscar: '/api/buscar',
+            buscar: '/api/buscar', //por roles, usuarios, teams, turnos
+            clientes: '/api/clientes',
             teams: '/api/teams',
             turnos: '/api/turnos',
             usuarios: '/api/usuarios',
@@ -48,7 +49,8 @@ class Server {
 
     routes(){
         this.app.use(this.paths.auth, require('../routes/auth'));
-        this.app.use(this.paths.buscar, require('../routes/buscar'));
+        this.app.use(this.paths.buscar, require('../routes/buscar')); //por roles, usuarios, teams, turnos
+        this.app.use(this.paths.clientes, require('../routes/clientes')); 
       this.app.use(this.paths.usuarios, require('../routes/usuarios'));
       this.app.use(this.paths.teams, require('../routes/teams'));
       this.app.use(this.paths.turnos, require('../routes/turnos'));

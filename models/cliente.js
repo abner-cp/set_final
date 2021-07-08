@@ -4,8 +4,8 @@ const { Schema, model } = require('mongoose');
 const ClienteSchema = Schema({
     nombre: {
         type: String,
-        require: [true, 'El Nombre es obligatorio'],
-        unique: true
+        //require: [true, 'El Nombre es obligatorio'],
+        //unique: true
     },
     rut: {
         type: String,
@@ -27,7 +27,7 @@ const ClienteSchema = Schema({
     },
     correo: {
         type: String,
-        required: [true, 'El correo es obligatorio'],
+       // required: [true, 'El correo es obligatorio'],
     },
 
 });

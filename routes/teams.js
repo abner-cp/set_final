@@ -34,8 +34,6 @@ router.get('/:id', [
 router.post('/', [
     validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-    check('usuario', 'NO es un id mongo válido!!!').isMongoId(),
-    check('usuario').custom(existeUsuarioById),
     validarCampos
 ], crearTeam);
 

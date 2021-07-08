@@ -6,32 +6,51 @@ const { validarJWT,
       tieneRole,
        AdminRole} = require('../middlewares');
 
-const { esRoleValido, emailExiste, existeUsuarioById } = require('../helpers/db-validators');
+const { esRoleValido, emailExiste, existeUsuarioById, existeCliente, existeClienteById } = require('../helpers/db-validators');
 
-const { usuariosGet, usuariosPost, usuariosPut, usuariosDelete, obtenerUsuario } = require('../controllers/usuarios');
+const {  crearCliente, obtenerCliente, obtenerClientes, actualizarCliente, eliminarCliente} = require('../controllers/clientes');
 
 
 
 const router = Router();
 
-router.get('/', usuariosGet);
+router.get('/', obtenerClientes);
 
 router.get('/:id',[
     check('id', 'NO es un ID válido').isMongoId(),
-    check('id').custom(existeUsuarioById),
+    //check('id').custom(existeUsuarioById),
     validarCampos
-] ,obtenerUsuario);
+] ,obtenerCliente);
 
 router.post('/', [
+    validarJWT,
+    AdminRole,
     check('nombre', 'el nombre no es válido').not().isEmpty(),
-    check('apellido', 'el apellido no es válido').not().isEmpty(),
-    check('password', 'el password debe ser de más de 6 letras').isLength({ min: 6 }),
+    check('rut', 'el rut no es válido').not().isEmpty(),
+    check('celular', 'el celular no es válido').not().isEmpty(),
     check('correo', 'el correo no es válido').isEmail(),
-    check('correo').custom( emailExiste ),
-    //check('rol', 'ROl no es válido').isIn( [ 'ADMIN_ROLE', 'USER_ROLE' ] ),
-    check('rol').custom( esRoleValido), // esRoleValido recibe el primer valor del custom, osea; ROL
     validarCampos
-], usuariosPost);
+], crearCliente);
+
+
+router.put('/:id', [
+    validarJWT,
+    AdminRole,
+    check('id', 'NO es un ID válido').isMongoId(),
+    check('id').custom( existeClienteById ),
+    validarCampos
+], actualizarCliente);
+
+
+router.delete('/:id',[
+    validarJWT,
+     AdminRole,
+    check('id', 'NO es un ID válido').isMongoId(),
+    check('id').custom( existeClienteById ), 
+    validarCampos
+], eliminarCliente);
+
+
 
 
 

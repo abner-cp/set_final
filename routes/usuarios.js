@@ -23,6 +23,7 @@ router.get('/:id',[
 ] ,obtenerUsuario);
 
 router.post('/', [
+    validarJWT,
     check('nombre', 'el nombre no es válido').not().isEmpty(),
     check('apellido', 'el apellido no es válido').not().isEmpty(),
     check('password', 'el password debe ser de más de 6 letras').isLength({ min: 6 }),
@@ -35,9 +36,11 @@ router.post('/', [
 
 
 router.put('/:id', [
+    validarJWT,
+    tieneRole( 'ADMIN_ROLE', 'USER_ROLE', 'GUARDIA_ROLE', 'SUPERVISOR_ROLE' ),
+    // AdminRole,
     check('id', 'NO es un ID válido').isMongoId(),
     check('id').custom( existeUsuarioById ),
-    check('rol').custom( esRoleValido),
     validarCampos
 ], usuariosPut);
 

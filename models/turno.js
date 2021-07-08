@@ -4,8 +4,9 @@ const { Schema, model } = require('mongoose');
 const TurnoSchema = Schema({
     nombre: {
         type: String,
-        require: [true, 'El Nombre es obligatorio'],
-        unique: true
+        //require: [true, 'El Nombre es obligatorio'],
+        
+        
     },
     estado: {
         type: Boolean,
@@ -15,7 +16,7 @@ const TurnoSchema = Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        require: true
+       require: true
     }
 
 });

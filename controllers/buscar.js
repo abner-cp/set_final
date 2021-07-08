@@ -1,16 +1,17 @@
 
 const { response } = require('express');
 const { isValidObjectId } = require('mongoose');
-const { Usuario, Turno, Team } = require('../models');
+const { Usuario, Turno, Team, Role } = require('../models');
 const usuario = require('../models/usuario');
-const { usuariosDelete } = require('./usuarios');
+
 
 const coleccionesPermitidas = [
     'usuarios',
     'turnos',
     'roles',
     'teams',
-    'clientes'
+    'clientes',
+    'guardias'
 ];
 
 
@@ -27,6 +28,40 @@ const buscarUsuarios = async (termino = '', res = response) => {
     const usuarios = await Usuario.find({
         $or: [{ nombre: regex }, { correo: regex }],
         $and: [{ estado: true }]
+    });
+
+    res.json({
+        //total: usuario.length,
+        results: usuarios
+    });
+}
+
+const buscarGuardias = async (termino = '', res = response) => {
+    if(termino='all'){
+        const query= {rol: 'GUARDIA_ROLE'};
+        const todos = await Usuario.find(query);
+     
+        return res.json({
+            results: todos
+        })
+    }
+    const esMongoID = isValidObjectId(termino);
+    if (esMongoID) {
+        const usuario = await Usuario.findById(termino);
+        if( usuario.rol.includes('GUARDIA_ROLE')){
+            return res.json({
+                results: (usuario) ? [usuario] : []
+            })
+        }
+        return res.json({
+            results: usuarios = await Usuario.find({rol: 'GUARDIA_ROLE'})
+        })
+    }
+
+    const regex = new RegExp(termino, 'i');
+    const usuarios = await Usuario.find({
+        $or: [{ nombre: regex }, { correo: regex }],
+        $and: [{ estado: true }, {rol: 'GUARDIA_ROLE'}]
     });
 
     res.json({
@@ -73,6 +108,7 @@ const buscarTeams = async (termino = '', res = response) => {
     });
 
 }
+
 const buscarClientes = async (termino = '', res = response) => {
     const esMongoID = isValidObjectId(termino);
     if (esMongoID) {
@@ -88,6 +124,24 @@ const buscarClientes = async (termino = '', res = response) => {
     res.json({
         //total: usuario.length,
         results: teams
+    });
+}
+
+const buscarRoles = async (termino = '', res = response) => {
+    const esMongoID = isValidObjectId(termino);
+    if (esMongoID) {
+        const rol = await Role.findById(termino); //incoporar populate con cliente
+        return res.json({
+            results: (rol) ? [rol]: []
+        })
+    }
+
+    const regex = new RegExp(termino, 'i');
+    const roles = await Role.find({ rol: regex}); //incorporar populate con cliente
+
+    res.json({
+        //total: usuario.length,
+        results: roles
     });
 }
 
@@ -120,6 +174,14 @@ const buscar = (req, res = response) => {
 
         case 'clientes':
             buscarClientes(termino, res);
+            break;
+
+        case 'roles':
+            buscarRoles(termino, res);
+            break;
+
+        case 'guardias':
+            buscarGuardias(termino, res);
             break;
 
         default:

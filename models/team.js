@@ -4,8 +4,8 @@ const { Schema, model } = require('mongoose');
 const TeamSchema = Schema({
     nombre: {
         type: String,
-        require: [true, 'El Nombre es obligatorio'],
-        unique: true
+        //require: [true, 'El Nombre es obligatorio'],
+        //unique: true
     },
     color: {
         type: String,
