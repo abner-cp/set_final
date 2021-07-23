@@ -33,6 +33,11 @@ const UsuarioSchema = Schema({
         default: 'USER_ROLE',
         emun: ['ADMIND_ROLE', 'USER_ROLE']
     },
+    team: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+        //require: true
+    },
     estado: {
         type: Boolean,
         default: true

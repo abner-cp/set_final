@@ -20,6 +20,7 @@ const AdminRole = (req, res = response, next) => {
 }
 
 
+
 const tieneRole = ( ...roles ) => {
     return (req, res= response, next) => {
 
@@ -40,5 +41,6 @@ const tieneRole = ( ...roles ) => {
 
 module.exports = {
     AdminRole, 
-    tieneRole
+    tieneRole,
+ 
 }

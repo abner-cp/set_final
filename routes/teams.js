@@ -5,10 +5,11 @@ const { crearTeam,
     obtenerTeams,
     obtenerTeam,
     actualizarTeam,
-    eliminarTeam } = require('../controllers/teams');
-const { existeTeamById, existeUsuarioById } = require('../helpers/db-validators');
+    eliminarTeam, 
+    guardias} = require('../controllers/teams');
+const { existeTeamById, existeUsuarioById, existeSupervisorById } = require('../helpers/db-validators');
 
-const { validarCampos, validarJWT, AdminRole } = require('../middlewares');
+const { validarCampos, validarJWT, AdminRole, validarGuardiaTeams} = require('../middlewares');
 
 const router = Router();
 
@@ -30,10 +31,12 @@ router.get('/:id', [
 ], obtenerTeam);
 
 
-//crear un team -privado- con token valido
+//crear un team -privado- con token valido con supervisor
 router.post('/', [
     validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('supervisor', 'El supervisor es obligatorio').not().isEmpty(),
+    check('supervisor').custom(existeSupervisorById),
     validarCampos
 ], crearTeam);
 
@@ -44,6 +47,22 @@ router.put('/:id', [
     check('id').custom(existeTeamById),
     validarCampos
 ], actualizarTeam);
+
+//agregar guardia a team -privado- con token valido
+router.put('/:coleccion/:id', [
+    validarJWT,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    check('id').custom(existeTeamById),
+    validarGuardiaTeams,
+    validarCampos
+], guardias);
+//agregar guardia a team -privado- con token valido
+router.delete('/:coleccion/:id', [
+    validarJWT,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    check('id').custom(existeTeamById),
+    validarCampos
+], guardias);
 
 //borrar un team -privado- Admin
 router.delete('/:id',[

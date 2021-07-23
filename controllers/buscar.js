@@ -38,11 +38,12 @@ const buscarUsuarios = async (termino = '', res = response) => {
 
 const buscarGuardias = async (termino = '', res = response) => {
     if(termino='all'){
-        const query= {rol: 'GUARDIA_ROLE'};
-        const todos = await Usuario.find(query);
-     
+        const guardias = await Usuario.find({
+            $or: [{ rol: 'GUARDIA_ROLE' }],
+            $and: [{ estado: true }]
+        });
         return res.json({
-            results: todos
+            results: guardias
         })
     }
     const esMongoID = isValidObjectId(termino);

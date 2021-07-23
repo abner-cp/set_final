@@ -6,7 +6,7 @@ const { validarJWT,
       tieneRole,
        AdminRole} = require('../middlewares');
 
-const { esRoleValido, emailExiste, existeUsuarioById } = require('../helpers/db-validators');
+const { esRoleValido, emailExiste, existeUsuarioById, existeTeamById } = require('../helpers/db-validators');
 
 const { usuariosGet, usuariosPost, usuariosPut, usuariosDelete, obtenerUsuario } = require('../controllers/usuarios');
 
@@ -29,6 +29,8 @@ router.post('/', [
     check('password', 'el password debe ser de más de 6 letras').isLength({ min: 6 }),
     check('correo', 'el correo no es válido').isEmail(),
     check('correo').custom( emailExiste ),
+    //check('team', 'el team no es válido').not().isEmpty(),
+    //check('team').custom( existeTeamById ),
     //check('rol', 'ROl no es válido').isIn( [ 'ADMIN_ROLE', 'USER_ROLE' ] ),
     check('rol').custom( esRoleValido), // esRoleValido recibe el primer valor del custom, osea; ROL
     validarCampos
@@ -38,9 +40,11 @@ router.post('/', [
 router.put('/:id', [
     validarJWT,
     tieneRole( 'ADMIN_ROLE', 'USER_ROLE', 'GUARDIA_ROLE', 'SUPERVISOR_ROLE' ),
-    // AdminRole,
+    AdminRole,
     check('id', 'NO es un ID válido').isMongoId(),
     check('id').custom( existeUsuarioById ),
+    //check('team', 'el team no es válido').not().isEmpty(),
+    //check('team').custom( existeTeamById ),
     validarCampos
 ], usuariosPut);
 
