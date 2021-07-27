@@ -29,6 +29,11 @@ const ClienteSchema = Schema({
         type: String,
        // required: [true, 'El correo es obligatorio'],
     },
+    fecha: {
+        type: Date,
+       // required: [true, 'El correo es obligatorio'],
+    },
+    img: { type: String},
 
 });
 

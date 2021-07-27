@@ -27,6 +27,9 @@ const UsuarioSchema = Schema({
     img: {
         type: String,
     },
+    ingreso: {
+        type: Date,
+    },
     rol: {
         type: String,
         required: true,
