@@ -27,11 +27,27 @@ const UsuarioSchema = Schema({
     img: {
         type: String,
     },
+    ingreso: {
+        type: Date,
+    },
     rol: {
         type: String,
         required: true,
         default: 'USER_ROLE',
         emun: ['ADMIND_ROLE', 'USER_ROLE']
+    },
+    team: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+        //require: true
+    },
+    region: {
+        type: Schema.Types.ObjectId,
+        ref: 'Region',
+        //require: true
+    },
+    ciudad: {
+        type: String,
     },
     estado: {
         type: Boolean,

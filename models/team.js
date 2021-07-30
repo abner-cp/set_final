@@ -16,16 +16,20 @@ const TeamSchema = Schema({
         default: true,
         require: true
     },
-    usuario: {
+    usuario:  {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
         require: true
-    }
-/*   cliente: {
+    },
+    guardias: [ {
         type: Schema.Types.ObjectId,
-        ref: 'Cliente',
+        ref: 'Usuario',
         require: true
-    }*/
+    }],
+    supervisor: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
+    }
 
 });
 

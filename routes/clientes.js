@@ -29,6 +29,9 @@ router.post('/', [
     check('rut', 'el rut no es válido').not().isEmpty(),
     check('celular', 'el celular no es válido').not().isEmpty(),
     check('correo', 'el correo no es válido').isEmail(),
+    check('direccion', 'ingrese una direccion').not().isEmpty(),
+    check('region', 'ingrese región').not().isEmpty(),
+    check('ciudad', 'ingrese ciudad').not().isEmpty(),
     validarCampos
 ], crearCliente);
 

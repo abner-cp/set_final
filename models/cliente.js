@@ -27,16 +27,34 @@ const ClienteSchema = Schema({
     },
     correo: {
         type: String,
-       // required: [true, 'El correo es obligatorio'],
+        // required: [true, 'El correo es obligatorio'],
+    },
+    fecha: {
+        type: Date,
+        // required: [true, 'El correo es obligatorio'],
+    },
+    img: {
+        type: String,
+    },
+    direccion: {
+        type: String,
+    },
+    region: {
+        type: Schema.Types.ObjectId,
+        ref: 'Region',
+        //require: true
+    },
+    ciudad: {
+        type: String,
     },
 
 });
 
 //metodo sobrescrito 
-ClienteSchema.methods.toJSON = function() {
-    const { __v, estado, ...data} = this.toObject(); 
+ClienteSchema.methods.toJSON = function () {
+    const { __v, estado, ...data } = this.toObject();
     return data;
 }
 
 
-module.exports= model('Cliente', ClienteSchema);
+module.exports = model('Cliente', ClienteSchema);
