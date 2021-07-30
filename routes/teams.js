@@ -56,7 +56,7 @@ router.put('/:coleccion/:id', [
     validarGuardiaTeams,
     validarCampos
 ], guardias);
-//agregar guardia a team -privado- con token valido
+//borrar guardia a team -privado- con token valido
 router.delete('/:coleccion/:id', [
     validarJWT,
     check('id', 'NO es un id mongo válido!!!').isMongoId(),

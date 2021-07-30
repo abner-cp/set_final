@@ -20,6 +20,8 @@ class Server {
             teams: '/api/teams',
             turnos: '/api/turnos',
             usuarios: '/api/usuarios',
+            regiones: '/api/regiones',
+            //ciudades: '/api/ciudades',
             uploads: '/api/uploads',
         }
 
@@ -66,6 +68,8 @@ class Server {
         this.app.use(this.paths.usuarios, require('../routes/usuarios'));
         this.app.use(this.paths.teams, require('../routes/teams'));
         this.app.use(this.paths.turnos, require('../routes/turnos'));
+        this.app.use(this.paths.regiones, require('../routes/region'));
+       // this.app.use(this.paths.ciudades, require('../routes/ciudad'));
         this.app.use(this.paths.uploads, require('../routes/uploads'));
     }
 

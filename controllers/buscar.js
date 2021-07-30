@@ -41,7 +41,8 @@ const buscarGuardias = async (termino = '', res = response) => {
         const guardias = await Usuario.find({
             $or: [{ rol: 'GUARDIA_ROLE' }],
             $and: [{ estado: true }]
-        });
+        }).populate('team', 'nombre');
+
         return res.json({
             results: guardias
         })

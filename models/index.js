@@ -5,6 +5,8 @@ const Cliente = require('./cliente');
 const Team = require('./team');
 const Role = require('./role');
 const Usuario = require('./usuario');
+const Ciudad = require('./ciudad');
+const Region = require('./region');
 const Server = require('./server');
 
 
@@ -15,4 +17,6 @@ Team,
 Role,
 Usuario,
 Server,
+Region,
+Ciudad
 }

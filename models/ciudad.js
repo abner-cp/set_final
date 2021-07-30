@@ -5,6 +5,10 @@ const CiudadSchema = Schema({
         type: String,
         require: [true, 'El nombre es obligatorio']
     },
+    estado: {
+        type: Boolean,
+        default: true
+    },
 });
 
 

@@ -5,6 +5,14 @@ const RegionSchema = Schema({
         type: String,
         require: [true, 'El nombre es obligatorio']
     },
+    ciudades: [ {
+        type: String,
+       // require: true
+    }],
+    estado: {
+        type: Boolean,
+        default: true
+    },
 });
 
 

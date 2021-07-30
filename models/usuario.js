@@ -41,6 +41,14 @@ const UsuarioSchema = Schema({
         ref: 'Team',
         //require: true
     },
+    region: {
+        type: Schema.Types.ObjectId,
+        ref: 'Region',
+        //require: true
+    },
+    ciudad: {
+        type: String,
+    },
     estado: {
         type: Boolean,
         default: true
