@@ -7,10 +7,10 @@ const Usuario = require('../models/usuario');  //modelo class
 
 //POST
 const usuariosPost = async (req, res) => {
-  const { nombre, apellido,celular, correo, password, rol, fecha } = req.body;
+  const { nombre, apellido, rut, celular, correo, password, rol, fecha, direccion, region, ciudad } = req.body;
 
   
-  const usuario = new Usuario({ nombre, apellido, celular, correo, password, rol, ingreso: fecha });
+  const usuario = new Usuario({ nombre, apellido, rut, celular, correo, password, rol, ingreso: fecha, direccion, region, ciudad });
 
   //encriptar pass
   const salt = bcryptjs.genSaltSync();

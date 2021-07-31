@@ -11,6 +11,10 @@ const UsuarioSchema = Schema({
         type: String,
         require: [true, 'El apellido es obligatorio']
     },
+    rut: {
+        type: String,
+        require: [true, 'El rut es obligatorio']
+    },
     celular: {
         type: Number,
         require: [true, 'El celular es obligatorio']
@@ -30,16 +34,9 @@ const UsuarioSchema = Schema({
     ingreso: {
         type: Date,
     },
-    rol: {
+
+    direccion: {
         type: String,
-        required: true,
-        default: 'USER_ROLE',
-        emun: ['ADMIND_ROLE', 'USER_ROLE']
-    },
-    team: {
-        type: Schema.Types.ObjectId,
-        ref: 'Team',
-        //require: true
     },
     region: {
         type: Schema.Types.ObjectId,
@@ -56,6 +53,17 @@ const UsuarioSchema = Schema({
     google: {
         type: Boolean,
         default: false
+    },
+    rol: {
+        type: String,
+        required: true,
+        default: 'USER_ROLE',
+        emun: ['ADMIND_ROLE', 'USER_ROLE']
+    },
+    team: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+        //require: true
     },
 
 });
