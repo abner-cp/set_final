@@ -3,6 +3,35 @@ const { Region, Ciudad } = require("../models");
 
 
 
+
+
+//obtenerRegioness - páginado- total- populate
+const obtenerRegiones = async (req = request, res = response) => {
+  const { limite = 5, desde = 0 } = req.query;
+  const query = { estado: true };
+
+  const [total, regiones] = await Promise.all([ //envío arreglo, demora menos 
+      Region.countDocuments(query),
+      Region.find(query)
+          .skip(Number(desde))
+          .limit(Number(limite))
+  ]);
+  res.json({
+      total,
+      regiones
+  });
+}
+
+
+//obtenerServicio - populate
+const obtenerRegion = async (req, res = response) => {
+  const { id } = req.params;
+  const region = await Region.findById(id);
+
+  res.json(region);
+}
+
+
 //crear region
 const crearRegion = async (req, res = response) => {
 
@@ -75,5 +104,7 @@ const eliminarRegion = async (req, res = response) => {
 module.exports = {
   crearRegion,
   eliminarRegion,
-  addCiudad
+  addCiudad,
+  obtenerRegion,
+  obtenerRegiones
 }

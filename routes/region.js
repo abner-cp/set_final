@@ -4,7 +4,7 @@ const { check } = require('express-validator');
 
 const { validarCampos} = require('../middlewares');
 
-const { eliminarRegion, crearRegion, addCiudad } = require('../controllers/region');
+const { eliminarRegion, crearRegion, addCiudad, obtenerRegion, obtenerRegiones } = require('../controllers/region');
 
 
 const router = Router();
@@ -13,7 +13,12 @@ const router = Router();
  * {{url}}/api/region
  */
 
+ router.get('/', obtenerRegiones);
 
+ router.get('/:id',[
+     check('id', 'NO es un ID válido').isMongoId(),
+     validarCampos
+ ] ,obtenerRegion);
 
 //crear una region -privado- con token valido con supervisor
 router.post('/', [

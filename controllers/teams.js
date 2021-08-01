@@ -12,6 +12,8 @@ const obtenerTeams = async (req = request, res = response) => {
     Team.countDocuments(query),
     Team.find(query)
       .populate('usuario', 'nombre')
+      .populate('supervisor', 'nombre')
+      .populate('guardias', 'nombre')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
@@ -25,7 +27,10 @@ const obtenerTeams = async (req = request, res = response) => {
 //obtenerTeam - populate
 const obtenerTeam = async (req, res = response) => {
   const { id } = req.params;
-  const team = await Team.findById(id).populate('usuario', 'nombre');
+  const team = await Team.findById(id)
+    .populate('usuario', 'nombre')
+    .populate('supervisor', 'nombre')
+    .populate('guardias', 'nombre');
 
   res.json(team);
 }
@@ -93,13 +98,13 @@ const eliminarTeam = async (req, res = response) => {
 const agregarGuardias = async (id, req, res = response) => {
 
   const { guardia } = req.body;
- if (guardia == null){
-  return res.status(400).json({
-    msg: `El guardia no es válido!`
-  });
- }
+  if (guardia == null) {
+    return res.status(400).json({
+      msg: `El guardia no es válido!`
+    });
+  }
   const asignarGuardia = await Team.findByIdAndUpdate(id, {
-    $push: { guardias: guardia},
+    $push: { guardias: guardia },
   });
   res.json(asignarGuardia);
 }
@@ -108,11 +113,11 @@ const agregarGuardias = async (id, req, res = response) => {
 const eliminarGuardias = async (id, req, res = response) => {
 
   const { guardia } = req.body;
-  if (guardia == null){
+  if (guardia == null) {
     return res.status(400).json({
       msg: `El guardia no es válido!`
     });
-   }
+  }
 
   const eliminarGuardia = await Team.findByIdAndUpdate(id, {
     $pull: { guardias: guardia },
@@ -137,7 +142,7 @@ const guardias = (req, res = response) => {
       break;
 
     case 'del':
-      eliminarGuardias(id, req,  res);
+      eliminarGuardias(id, req, res);
       break;
     default:
       res.status(500).json({

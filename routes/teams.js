@@ -34,15 +34,18 @@ router.get('/:id', [
 //crear un team -privado- con token valido con supervisor
 router.post('/', [
     validarJWT,
+    AdminRole,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('supervisor', 'El supervisor es obligatorio').not().isEmpty(),
     check('supervisor').custom(existeSupervisorById),
+    check('nivel', 'El nivel es obligatorio').not().isEmpty(),
     validarCampos
 ], crearTeam);
 
 //actualizar un team -privado- con token valido
 router.put('/:id', [
     validarJWT,
+    AdminRole,
     check('id', 'NO es un id mongo válido!!!').isMongoId(),
     check('id').custom(existeTeamById),
     validarCampos

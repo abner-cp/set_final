@@ -34,7 +34,9 @@ const obtenerTurno= async(req, res=response)=> {
 //crear turno
 const crearTurno = async(req, res= response) => {
 
-    const nombre = req.body.nombre.toUpperCase();
+    const {nombre, ingreso, salida, horas, colacion}= req.body;
+    const nombre2 = nombre.toUpperCase();
+    console.log(nombre2);
     const turnoBD = await Turno.findOne({ nombre });
 
     if( turnoBD ){
@@ -45,7 +47,7 @@ const crearTurno = async(req, res= response) => {
 
     //generar data para guardar
     const data = {
-        nombre,
+        nombre, ingreso, salida, horas, colacion,
         usuario: req.usuario._id
     }
     const turno = new Turno( data ); 

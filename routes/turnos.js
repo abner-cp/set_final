@@ -34,6 +34,10 @@ router.get('/:id', [
 router.post('/', [
     validarJWT,
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('ingreso', 'El ingreso es obligatorio').not().isEmpty(),
+    check('salida', 'La salida es obligatorio').not().isEmpty(),
+    check('horas', 'Las horas/duración es obligatorio').not().isEmpty(),
+    check('colacion', 'La colacion es obligatorio').not().isEmpty(),
     validarCampos
 ], crearTurno);
 

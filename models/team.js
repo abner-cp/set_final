@@ -11,6 +11,10 @@ const TeamSchema = Schema({
         type: String,
         default: "red"
     },
+    nivel: {
+        type: Number,
+        default: 3
+    },
     estado: {
         type: Boolean,
         default: true,
@@ -19,7 +23,6 @@ const TeamSchema = Schema({
     usuario:  {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        require: true
     },
     guardias: [ {
         type: Schema.Types.ObjectId,
@@ -29,6 +32,10 @@ const TeamSchema = Schema({
     supervisor: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
+    },
+    cliente: {
+        type: Schema.Types.ObjectId,
+        ref: 'Cliente'
     }
 
 });
