@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Team } = require("../models");
+const { Team, Usuario } = require("../models");
 
 
 
@@ -12,6 +12,7 @@ const obtenerTeams = async (req = request, res = response) => {
     Team.countDocuments(query),
     Team.find(query)
       .populate('usuario', 'nombre')
+      .populate('cliente', 'nombre')
       .populate('supervisor', 'nombre')
       .populate('guardias', 'nombre')
       .skip(Number(desde))
@@ -30,6 +31,7 @@ const obtenerTeam = async (req, res = response) => {
   const team = await Team.findById(id)
     .populate('usuario', 'nombre')
     .populate('supervisor', 'nombre')
+    .populate('cliente', 'nombre')
     .populate('guardias', 'nombre');
 
   res.json(team);
@@ -103,11 +105,16 @@ const agregarGuardias = async (id, req, res = response) => {
       msg: `El guardia no es válido!`
     });
   }
+
   const asignarGuardia = await Team.findByIdAndUpdate(id, {
     $push: { guardias: guardia },
   });
+  await Usuario.findByIdAndUpdate(guardia, { team: asignarGuardia });
+
+
   res.json(asignarGuardia);
 }
+
 
 //eliminar guardias a teams
 const eliminarGuardias = async (id, req, res = response) => {
@@ -122,8 +129,12 @@ const eliminarGuardias = async (id, req, res = response) => {
   const eliminarGuardia = await Team.findByIdAndUpdate(id, {
     $pull: { guardias: guardia },
   });
+
+  //await Usuario.findByIdAndUpdate(guardia, {team: null});
   res.json(eliminarGuardia);
 }
+
+
 
 const guardias = (req, res = response) => {
 

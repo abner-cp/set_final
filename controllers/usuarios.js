@@ -7,10 +7,10 @@ const Usuario = require('../models/usuario');  //modelo class
 
 //POST
 const usuariosPost = async (req, res) => {
-  const { nombre, apellido, rut, celular, correo, password, rol, fecha, direccion, region, ciudad } = req.body;
+  const { nombre, apellido, rut, celular, correo, password, rol,  direccion, region, ciudad } = req.body;
 
   
-  const usuario = new Usuario({ nombre, apellido, rut, celular, correo, password, rol, ingreso: fecha, direccion, region, ciudad });
+  const usuario = new Usuario({ nombre, apellido, rut, celular, correo, password, rol, direccion, region, ciudad });
 
   //encriptar pass
   const salt = bcryptjs.genSaltSync();
@@ -19,7 +19,6 @@ const usuariosPost = async (req, res) => {
   //guardar bd
   await usuario.save();
   res.json({
-    msg: 'POST API - Controlador',
     usuario
   });
 }
@@ -42,12 +41,12 @@ const usuariosPut = async (req, res = response) => {
 
 //GET
 const usuariosGet = async (req = request, res = response) => {
-  const { limite = 5, desde = 0 } = req.query;
+  const { limite = 10, desde = 0 } = req.query;
   const query = { estado: true };  //solo los usuarios activos en bd
 
   const [total, usuarios] = await Promise.all([ //envío arreglo, demora menos 
     Usuario.countDocuments(query),
-    Usuario.find(query)
+    Usuario.find(query).populate('region', 'nombre')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);

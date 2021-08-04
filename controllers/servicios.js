@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Cliente, Region, Servicio } = require("../models");
+const { Cliente, Region, Servicio, Team } = require("../models");
 
 
 
@@ -43,18 +43,49 @@ const crearServicio = async (req, res = response) => {
             msg: `El servicio ${servicioBD.nombre}, ya existe!`
         });
     }
+    //RESCATO CLIENTE DESDE TEAM
+    const team = await Team.findById(req.usuario.team);
+    const cliente = team.cliente;
 
     //generar data para guardar
     const data = {
-       titulo,
-       descripcion,
-       turno,
-        usuario: req.usuario._id
+        titulo,
+        descripcion,
+        turno,
+        usuarioIn: req.usuario._id,
+        team: req.usuario.team,
+        cliente: cliente
     }
     const servicio = new Servicio(data);
 
     //guardar BD
     await servicio.save();
+
+    res.status(201).json(servicio);
+}
+
+
+//finalizar servicio
+const finServicio = async (req, res = response) => {
+
+    const { id } = req.params;
+    const servicioBD = await Servicio.findById( id );
+    const termino = Date();
+    console.log(servicioBD);
+
+    if (!servicioBD) {
+        return res.status(400).json({
+            msg: `El servicio ${servicioBD.nombre}, NO existe!`
+        });
+    }
+
+    //generar data para guardar
+    const data = {
+        termino: termino,
+        estado: false,
+        usuarioOut: req.usuario._id
+    }
+    const servicio = await Servicio.findByIdAndUpdate(id, data);
 
     res.status(201).json(servicio);
 }
@@ -93,5 +124,6 @@ module.exports = {
     obtenerServicios,
     obtenerServicio,
     actualizarServicio,
-    eliminarServicio
+    eliminarServicio,
+    finServicio
 }

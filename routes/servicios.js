@@ -6,10 +6,10 @@ const { validarJWT,
       tieneRole,
        AdminRole} = require('../middlewares');
 
-const { esRoleValido, emailExiste, existeUsuarioById, existeClienteById } = require('../helpers/db-validators');
+const { esRoleValido, emailExiste, existeUsuarioById, existeClienteById, existeServicioById } = require('../helpers/db-validators');
 
 
-const {  crearServicio, obtenerServicio, obtenerServicios, actualizarServicio, eliminarServicio } = require('../controllers/servicios');
+const {  crearServicio, obtenerServicio, obtenerServicios, actualizarServicio, eliminarServicio, finServicio } = require('../controllers/servicios');
 
 
 
@@ -37,7 +37,15 @@ router.put('/:id', [
     validarJWT,
     AdminRole,
     check('id', 'NO es un ID válido').isMongoId(),
-    check('id').custom( existeClienteById ),
+    //check('id').custom( existeServicioById ),
+    validarCampos
+], finServicio);
+
+router.put('/:coleccion/:id', [
+    validarJWT,
+    AdminRole,
+    check('id', 'NO es un ID válido').isMongoId(),
+    //check('id').custom( existeClienteById ),
     validarCampos
 ], actualizarServicio);
 

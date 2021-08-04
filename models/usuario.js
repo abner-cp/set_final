@@ -33,6 +33,7 @@ const UsuarioSchema = Schema({
     },
     ingreso: {
         type: Date,
+        default: Date.now,
     },
 
     direccion: {

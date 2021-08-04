@@ -19,7 +19,7 @@ const ServicioSchema = Schema({
     termino: {
         type: Date,
     },
-    evento: [{
+    observacion: [{
         type: [String],
         default: [],
     }],
@@ -27,14 +27,25 @@ const ServicioSchema = Schema({
         type: [String],
         default: [],
     }],
-    usuario: {
+    usuarioIn: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',   
+    },
+    usuarioOut: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        required: true
     },
     team: {
         type: Schema.Types.ObjectId,
         ref: 'Team',
+    },
+    cliente: {
+        type: Schema.Types.ObjectId,
+        ref: 'Cliente',
+    },
+    estado: {
+        type: Boolean,
+        default: true
     },
 });
 
