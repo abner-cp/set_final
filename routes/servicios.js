@@ -6,7 +6,7 @@ const { validarJWT,
       tieneRole,
        AdminRole} = require('../middlewares');
 
-const { esRoleValido, emailExiste, existeUsuarioById, existeClienteById, existeServicioById } = require('../helpers/db-validators');
+const { existeClienteById, existeServicioById } = require('../helpers/db-validators');
 
 
 const {  crearServicio, obtenerServicio, obtenerServicios, actualizarServicio, eliminarServicio, finServicio } = require('../controllers/servicios');
