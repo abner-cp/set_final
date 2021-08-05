@@ -7,12 +7,15 @@ const { Cliente, Region, Servicio, Team } = require("../models");
 //obtenerServicios - páginado- total- populate
 const obtenerServicios = async (req = request, res = response) => {
     const { limite = 5, desde = 0 } = req.query;
-    const query = { estado: true };
 
     const [total, servicios] = await Promise.all([ //envío arreglo, demora menos 
-        Servicio.countDocuments(query),
-        Servicio.find(query)
-            .populate('usuario', 'nombre')
+        Servicio.countDocuments(),
+        Servicio.find()
+            .populate('turno', 'nombre')
+            .populate('usuarioIn', 'nombre')
+            .populate('usuarioOut', 'nombre')
+            .populate('team', 'nombre')
+            .populate('cliente', 'nombre')
             .skip(Number(desde))
             .limit(Number(limite))
     ]);
@@ -26,7 +29,12 @@ const obtenerServicios = async (req = request, res = response) => {
 //obtenerServicio - populate
 const obtenerServicio = async (req, res = response) => {
     const { id } = req.params;
-    const servicio = await Servicio.findById(id).populate('usuario', 'nombre');
+    const servicio = await Servicio.findById(id)
+        .populate('turno', 'nombre')
+        .populate('usuarioIn', 'nombre')
+        .populate('usuarioOut', 'nombre')
+        .populate('team', 'nombre')
+        .populate('cliente', 'nombre');
 
     res.json(servicio);
 }
@@ -69,7 +77,7 @@ const crearServicio = async (req, res = response) => {
 const finServicio = async (req, res = response) => {
 
     const { id } = req.params;
-    const servicioBD = await Servicio.findById( id );
+    const servicioBD = await Servicio.findById(id);
     const termino = Date();
     console.log(servicioBD);
 

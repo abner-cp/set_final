@@ -3,7 +3,7 @@ const PDF = require('pdfkit');
 const fs = require('fs');
 
 const { response } = require("express");
-const { Turno } = require("../models");
+const { Turno, Usuario } = require("../models");
 
 
 
@@ -16,11 +16,22 @@ const obtenerReportes = async (req = request, res = response) => {
 
     doc.pipe(fs.createWriteStream(pathRpt + '/example.pdf'));
 
-    doc.text('Hola mundo con pdfkiiiiit', {
+    doc.text('Reportes de Usuario', {
         align: 'center'
+    });
+
+    const resultado = await Usuario.find({ estado: true},{"nombre":1,"_id":0});
+    const totalGuardias = await Usuario.countDocuments({estado: true, rol: 'GUARDIA_ROLE'});
+
+    doc.text('nombre',{
+       columns: 1
+    });
+    doc.text(resultado,{
+       columns: 1
     });
     doc.end();
     console.log('RPT generado');
+    res.json(resultado);
 }
 
 

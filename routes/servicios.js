@@ -19,7 +19,6 @@ router.get('/', obtenerServicios);
 
 router.get('/:id',[
     check('id', 'NO es un ID válido').isMongoId(),
-    //check('id').custom(existeUsuarioById),
     validarCampos
 ] ,obtenerServicio);
 
