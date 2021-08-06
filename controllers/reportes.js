@@ -19,7 +19,7 @@ const obtenerReportes = async (req = request, res = response) => {
        const registro = {
            nro: count,
            nombre: Usuario.nombre,
-           rut: Usuario.apellido,
+           apellido: Usuario.apellido,
            correo: Usuario.correo,
            ingreso: Usuario.ingreso,
 
@@ -88,7 +88,7 @@ const obtenerReportes = async (req = request, res = response) => {
     doc.addTable([
         {key: 'nro', label: 'nro', align: 'left'},
         {key: 'nombre', label: 'nombre', align: 'left'},
-        {key: 'rut', label: 'RUT', align: 'left'},
+        {key: 'apellido', label: 'apellido', align: 'left'},
         {key: 'correo', label: 'Email', align: 'left'},
         {key: 'ingreso', label: 'fecha_ingreso', align: 'left'},
     ], registros,  {
