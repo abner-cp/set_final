@@ -1,37 +1,112 @@
 const path = require('path');
-const PDF = require('pdfkit');
+const PDF = require('pdfkit-construct');
 const fs = require('fs');
 
 const { response } = require("express");
-const { Turno, Usuario } = require("../models");
+const { Turno, Usuario, Team } = require("../models");
+const { listeners, events, discriminator } = require('../models/usuario');
+const { set } = require('mongoose');
 
 
 
 //obtenerReportes - páginado- total- populate
 const obtenerReportes = async (req = request, res = response) => {
 
-    var doc = new PDF();
+   const usuarios= await Usuario.find({estado: true});
+   const turnos= await Turno.find({estado: true});
+   let count = 1;
+   const registros = usuarios.map( (Usuario) => {
+       const registro = {
+           nro: count,
+           nombre: Usuario.nombre,
+           rut: Usuario.apellido,
+           correo: Usuario.correo,
+           ingreso: Usuario.ingreso,
 
-    const pathRpt = path.join(__dirname, '../reportes');
+       }
+       count++;
+       return registro;
 
-    doc.pipe(fs.createWriteStream(pathRpt + '/example.pdf'));
+   });
+   
+   console.log(turnos);
+   const totalUsuarios = await Usuario.countDocuments({estado: true});
 
-    doc.text('Reportes de Usuario', {
-        align: 'center'
+   const teams= await Team.find({estado: true}).populate('cliente', 'nombre');
+   const totalTeams = await Team.countDocuments({estado: true});
+
+    const doc = new PDF( { bufferPage: true } );
+   const filename= `rpt${Date.now()}.pdf`;
+
+    const stream = res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-disposition': `attachment`+`filename=${filename}`
     });
 
-    const resultado = await Usuario.find({ estado: true},{"nombre":1,"_id":0});
-    const totalGuardias = await Usuario.countDocuments({estado: true, rol: 'GUARDIA_ROLE'});
+    doc.on('data', (data) => {stream.write(data)});
+    doc.on('end', () => {stream.end()});
 
-    doc.text('nombre',{
-       columns: 1
+
+    // const resultados = [
+    //     {
+    //     nombre: usuarios.nombre,
+    //     apellido: usuarios.apellido,
+    //     rol: usuarios.rol,
+    //     }
+    // ];
+
+    
+    doc.image('./assets/logo.png', {
+        fit: [70, 70],
+        align: 'center',
+        valign: 'center'
+      });
+
+    doc.setDocumentHeader({
+        
+        height: '26'
+    }, () => {
+        doc.fontSize(15).text('Reportes de Usuarios', {
+            width: 420,
+            align: 'center'
+        });
+
+        doc.fontSize(12);
+
+        doc.text(`Total de Usuarios: ${totalUsuarios}`, {
+            width: 420,
+            align: 'right'
+        });
+        doc.text(`Total de Teams: ${totalTeams}`, {
+            width: 420,
+            align: 'right'
+        });
+
+        
     });
-    doc.text(resultado,{
-       columns: 1
-    });
+
+    doc.addTable([
+        {key: 'nro', label: 'nro', align: 'left'},
+        {key: 'nombre', label: 'nombre', align: 'left'},
+        {key: 'rut', label: 'RUT', align: 'left'},
+        {key: 'correo', label: 'Email', align: 'left'},
+        {key: 'ingreso', label: 'fecha_ingreso', align: 'left'},
+    ], registros,  {
+        border: null,
+        width: "fill_body",
+        striped: true,
+        stripedColors: ["#f6f6f6", "#d6c4dd"],
+        cellsPadding: 10,
+        marginLeft: 45,
+        marginRight: 45,
+        headAlign: 'center',
+
+    })
+
+    doc.render();
+   
     doc.end();
-    console.log('RPT generado');
-    res.json(resultado);
+
 }
 
 
