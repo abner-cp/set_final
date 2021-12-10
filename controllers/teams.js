@@ -14,7 +14,7 @@ const obtenerTeams = async (req = request, res = response) => {
       .populate('usuario', 'nombre')
       .populate('cliente', 'nombre')
       .populate('supervisor', 'nombre')
-      .populate('guardias', 'nombre')
+      .populate('guardias')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
@@ -32,7 +32,7 @@ const obtenerTeam = async (req, res = response) => {
     .populate('usuario', 'nombre')
     .populate('supervisor', 'nombre')
     .populate('cliente', 'nombre')
-    .populate('guardias', 'nombre');
+    .populate('guardias');
 
   res.json(team);
 }

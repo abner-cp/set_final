@@ -7,10 +7,6 @@ const TeamSchema = Schema({
         //require: [true, 'El Nombre es obligatorio'],
         //unique: true
     },
-    color: {
-        type: String,
-        default: "red"
-    },
     nivel: {
         type: Number,
         default: 3
