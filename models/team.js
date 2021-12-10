@@ -7,9 +7,9 @@ const TeamSchema = Schema({
         //require: [true, 'El Nombre es obligatorio'],
         //unique: true
     },
-    color: {
-        type: String,
-        default: "red"
+    nivel: {
+        type: Number,
+        default: 3
     },
     estado: {
         type: Boolean,
@@ -19,7 +19,6 @@ const TeamSchema = Schema({
     usuario:  {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-        require: true
     },
     guardias: [ {
         type: Schema.Types.ObjectId,
@@ -29,6 +28,10 @@ const TeamSchema = Schema({
     supervisor: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
+    },
+    cliente: {
+        type: Schema.Types.ObjectId,
+        ref: 'Cliente'
     }
 
 });

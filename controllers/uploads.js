@@ -118,6 +118,7 @@ const actualizarImagen = async (req, res = response) => {
 
 
 
+//recibe colección y id para mostrar img
 const mostrarImagen = async (req, res = response) => {
     const { id, coleccion } = req.params;
 

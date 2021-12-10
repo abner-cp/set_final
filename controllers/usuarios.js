@@ -3,14 +3,15 @@ const bcryptjs = require('bcryptjs'); //encriptar pass
 
 
 const Usuario = require('../models/usuario');  //modelo class
+const { Team } = require('../models');
 
 
 //POST
 const usuariosPost = async (req, res) => {
-  const { nombre, apellido,celular, correo, password, rol, fecha } = req.body;
+  const { nombre, apellido, rut, celular, correo, password, rol, direccion, region, ciudad } = req.body;
 
-  
-  const usuario = new Usuario({ nombre, apellido, celular, correo, password, rol, ingreso: fecha });
+
+  const usuario = new Usuario({ nombre, apellido, rut, celular, correo, password, rol, direccion, region, ciudad });
 
   //encriptar pass
   const salt = bcryptjs.genSaltSync();
@@ -19,7 +20,6 @@ const usuariosPost = async (req, res) => {
   //guardar bd
   await usuario.save();
   res.json({
-    msg: 'POST API - Controlador',
     usuario
   });
 }
@@ -42,40 +42,53 @@ const usuariosPut = async (req, res = response) => {
 
 //GET
 const usuariosGet = async (req = request, res = response) => {
-  const { limite = 5, desde = 0 } = req.query;
+  const { limite = 10, desde = 0 } = req.query;
   const query = { estado: true };  //solo los usuarios activos en bd
 
   const [total, usuarios] = await Promise.all([ //envío arreglo, demora menos 
     Usuario.countDocuments(query),
-    Usuario.find(query)
+    Usuario.find(query).populate('region', 'nombre')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
-res.json({
-  total,
-  usuarios
-});
+  res.json({
+    total,
+    usuarios
+  });
 }
 
 //obtenerUsuario 
-const obtenerUsuario= async(req, res=response)=> {
-  const { id }= req.params;
-  const usuario = await Usuario.findById( id );
+const obtenerUsuario = async (req, res = response) => {
+  const { id } = req.params;
+  const usuario = await Usuario.findById(id);
 
-  res.json( usuario );
+  res.json(usuario);
 }
 
 
 
 //Delete
-const usuariosDelete = async (req= request, res= response) => {
+const usuariosDelete = async (req = request, res = response) => {
   const { id } = req.params;
 
   const uid = req.uid;
+  const usuario = await Usuario.findById(id);
+  const teamUs = await Team.findById(usuario.team);
+  const arrayGuardias = teamUs.guardias;
 
-  const usuario = await Usuario.findByIdAndUpdate( id, { estado: false } );
+  if (!arrayGuardias.includes(usuario._id)) {
+    return res.status(400).json({
+      msg: `El guardia ${usuario.nombre}, NO existe en teams: ${teamUs.nombre}`
+    });
+  }
 
-  res.json( usuario );
+  await Team.findByIdAndUpdate(usuario.team, {
+    $pull: { guardias: id },
+  });
+
+  const usuarioNew = await Usuario.findByIdAndUpdate(id, { estado: false });
+
+  res.json(usuarioNew);
 }
 
 

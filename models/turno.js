@@ -5,8 +5,20 @@ const TurnoSchema = Schema({
     nombre: {
         type: String,
         //require: [true, 'El Nombre es obligatorio'],
-        
-        
+    },
+    ingreso: {
+        type: String,
+        //require: [true, 'El Nombre es obligatorio'],
+    },
+    salida: {
+        type: String,
+        //require: [true, 'El Nombre es obligatorio'],
+    },
+    horas: {
+        type: Number,
+    },
+    colacion: {
+        type: String,
     },
     estado: {
         type: Boolean,
@@ -16,16 +28,16 @@ const TurnoSchema = Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
-       require: true
+        require: true
     }
 
 });
 
 //metodo sobrescrito 
-TurnoSchema.methods.toJSON = function() {
-    const { __v, estado, ...data} = this.toObject(); 
+TurnoSchema.methods.toJSON = function () {
+    const { __v, estado, ...data } = this.toObject();
     return data;
 }
 
 
-module.exports= model('Turno', TurnoSchema);
+module.exports = model('Turno', TurnoSchema);

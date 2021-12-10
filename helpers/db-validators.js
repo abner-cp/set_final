@@ -1,5 +1,5 @@
 const Role = require('../models/role'); // model de los roles de usuario
-const { Usuario, Turno, Team, Cliente } = require('../models');
+const { Usuario, Turno, Team, Cliente, Servicio } = require('../models');
 
 
 
@@ -73,6 +73,14 @@ const existeGuardiaById = async (id) => {
      }
 }
 
+const existeServicioById = async (id) => {
+     //verificar id
+     const existeServicio = await Servicio.findById(id);
+     if (!existeServicio) {
+          throw new Error(`El servicio: ${id}, no existe...`);
+     }
+}
+
 /**
  * validar colecciones permitidas
  */
@@ -100,6 +108,7 @@ module.exports = {
      existeGuardiaById,
      existeClienteById,
      existeSupervisorById,
-     coleccionesPermitidas
+     coleccionesPermitidas,
+     existeServicioById
     
 }

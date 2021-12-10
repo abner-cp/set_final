@@ -15,5 +15,10 @@ const RegionSchema = Schema({
     },
 });
 
+RegionSchema.method('toJSON', function() {
+    const { __v, _id, ...Object } = this.toObject();
+    Object.id = _id;
+    return Object;
+})
 
 module.exports = model('Region', RegionSchema);
