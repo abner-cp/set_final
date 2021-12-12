@@ -2,7 +2,7 @@ const { response } = require("express");
 //const moment = require('moment'); // require
 //moment.locale('es');
 
-const { Cliente, Region, Servicio, Team } = require("../models");
+const { Cliente, Region, Servicio, Team, Turno } = require("../models");
 
 
 
@@ -46,29 +46,41 @@ const obtenerServicio = async (req, res = response) => {
 //crear servicio
 const crearServicio = async (req, res = response) => {
 
-    const { titulo, descripcion, turno } = req.body;
-    const servicioBD = await Servicio.findOne({ titulo });
+    const { title, descripcion, turno, date } = req.body;
+    const servicioBD = await Servicio.findOne({ title });
 
     if (servicioBD) {
         return res.status(400).json({
-            msg: `El servicio ${servicioBD.nombre}, ya existe!`
+            msg: `El servicio ${servicioBD.title}, ya existe!`
         });
     }
     //RESCATO CLIENTE DESDE TEAM
     const team = await Team.findById(req.usuario.team);
     const cliente = team.cliente;
 
+    //busco turno 
+    const turnoBD= await Turno.findById(turno);
+    if (!turnoBD) {
+        return res.status(400).json({
+            msg: `El turno ${turnoBD.nombre}, NO existe!`
+        });
+    }
 
+    //rescato inicio y fin desde turno
+    const horaInicio = turnoBD.ingreso;
+    const horaFin = turnoBD.salida;
    //const fecha= moment();
    //moment(fecha).format('DD-MMM-YYYY'); 
 
 
     //generar data para guardar
     const data = {
-        titulo,
+        title,
         descripcion,
+        date,
         turno,
-        //inicio: fecha.format('YYYY MM DD'),
+        start: horaInicio,
+        end: horaFin,
         usuarioIn: req.usuario._id,
         team: req.usuario.team,
         cliente: cliente

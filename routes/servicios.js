@@ -25,9 +25,10 @@ router.get('/:id',[
 router.post('/', [
     validarJWT,
     AdminRole,
-    check('titulo', 'el titulo no es válido').not().isEmpty(),
+    check('title', 'el titulo no es válido').not().isEmpty(),
     check('turno', 'debe ingresar un turno').not().isEmpty(),
     check('turno', 'NO es un ID válido').isMongoId(),
+    check('date', 'debe proporcionar una fecha').not().isEmpty(),
     validarCampos
 ], crearServicio);
 

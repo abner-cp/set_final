@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const ServicioSchema = Schema({
-    titulo: {
+    title: {
         type: String,
         required: true
     },
@@ -12,12 +12,15 @@ const ServicioSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Turno',
     },
-    inicio: {
-        type: Date,
+    date:{
+        type: Date
+    },
+    start: {
+        type: String,
         default: Date.now,
     },
-    termino: {
-        type: Date,
+    end: {
+        type: String,
     },
     observacion: [{
         type: [String],
