@@ -19,6 +19,7 @@ class Server {
             clientes: '/api/clientes',
             teams: '/api/teams',
             turnos: '/api/turnos',
+            turneros: '/api/turneros',
             usuarios: '/api/usuarios',
             servicios: '/api/servicios',
             regiones: '/api/regiones',
@@ -70,6 +71,7 @@ class Server {
         this.app.use(this.paths.usuarios, require('../routes/usuarios'));
         this.app.use(this.paths.teams, require('../routes/teams'));
         this.app.use(this.paths.turnos, require('../routes/turnos'));
+        this.app.use(this.paths.turneros, require('../routes/turneros'));
         this.app.use(this.paths.servicios, require('../routes/servicios'));
         this.app.use(this.paths.regiones, require('../routes/region'));
        // this.app.use(this.paths.ciudades, require('../routes/ciudad'));

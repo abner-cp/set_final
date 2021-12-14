@@ -9,7 +9,7 @@ const { Cliente, Region, Servicio, Team, Turno } = require("../models");
 
 //obtenerServicios - páginado- total- populate
 const obtenerServicios = async (req = request, res = response) => {
-    const { limite = 5, desde = 0 } = req.query;
+    const { limite = 12, desde = 0 } = req.query;
 
     const [total, servicios] = await Promise.all([ //envío arreglo, demora menos 
         Servicio.countDocuments(),
