@@ -12,6 +12,8 @@ const obtenerTurneros = async (req = request, res = response) => {
   const [total, turnos] = await Promise.all([ //envío arreglo, demora menos 
     Turnero.countDocuments(query),
     Turnero.find(query)
+      .populate('guardia')
+      .populate('turno')
       .populate('usuario', 'nombre')
       .populate('cliente', 'nombre')
       .skip(Number(desde))
@@ -28,6 +30,8 @@ const obtenerTurneros = async (req = request, res = response) => {
 const obtenerTurnero = async (req, res = response) => {
   const { id } = req.params;
   const turno = await Turnero.findById(id)
+    .populate('guardia')
+    .populate('turno')
     .populate('usuario', 'nombre')
     .populate('cliente', 'nombre');
 
@@ -36,7 +40,7 @@ const obtenerTurnero = async (req, res = response) => {
 
 
 
-//crear team
+//crear turnero
 const crearTurnero = async (req, res = response) => {
 
   const { estado, usuario, ...body } = req.body;
