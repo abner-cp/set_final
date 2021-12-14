@@ -5,6 +5,10 @@ const TurneroSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario', 
     },
+    turno: {
+        type: Schema.Types.ObjectId,
+        ref: 'Turno', 
+    },
     inicio:{
         type: Date
     },

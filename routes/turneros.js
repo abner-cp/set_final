@@ -30,6 +30,8 @@ router.post('/', [
     //AdminRole,
     check('guardia', 'El guardia es obligatorio').not().isEmpty(),
     check('guardia', 'NO es un id mongo válido!!!').isMongoId(),
+    check('turno', 'El turno es obligatorio').not().isEmpty(),
+    check('turno', 'NO es un id mongo válido!!!').isMongoId(),
     check('inicio', 'El inicio es obligatorio').not().isEmpty(),
     check('final', 'El final es obligatorio').not().isEmpty(),
     check('cliente', 'El cliente es obligatorio').not().isEmpty(),
