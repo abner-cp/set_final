@@ -23,6 +23,10 @@ const TurneroSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Cliente',
     },
+    team: {
+        type: Schema.Types.ObjectId,
+        ref: 'Team',
+    },
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
