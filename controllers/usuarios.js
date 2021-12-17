@@ -20,7 +20,7 @@ const usuariosPost = async (req, res) => {
   //guardar bd
   await usuario.save();
   res.json({
-    usuario
+    usuario, 
   });
 }
 

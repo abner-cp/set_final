@@ -33,10 +33,10 @@ router.post('/', [
     check('password', 'el password debe ser de más de 6 letras').isLength({ min: 6 }),
     check('correo', 'el correo no es válido').isEmail(),
     check('correo').custom( emailExiste ),
-    //check('team', 'el team no es válido').not().isEmpty(),
-    //check('team').custom( existeTeamById ),
+    check('rol', 'ingrese rol de usuario').not().isEmpty(),
+    check('rol', 'NO es un ID válido').isMongoId(),
     //check('rol', 'ROl no es válido').isIn( [ 'ADMIN_ROLE', 'USER_ROLE' ] ),
-    check('rol').custom( esRoleValido), // esRoleValido recibe el primer valor del custom, osea; ROL
+    //check('rol').custom( esRoleValido), // esRoleValido recibe el primer valor del custom, osea; ROL
     validarCampos
 ], usuariosPost);
 
