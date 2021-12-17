@@ -4,11 +4,13 @@ const Usuario = require("../models/usuario");
 const bcryptjs = require('bcryptjs');
 const { generarJWT } = require("../helpers/generar-jwt");
 const { googleVerify } = require("../helpers/google-verify");
+const { Turnero, Role } = require("../models");
 
 
 
 const login = async (req, res = response) => {
     const { correo, password } = req.body;
+
     try {
 
         //verificar email 
@@ -19,7 +21,7 @@ const login = async (req, res = response) => {
             });
         }
 
-        //verificar usuario en bd
+        //verificar estado usuario en bd
         if (!usuario.estado) {
             return res.status(400).json({
                 msg: 'Usuario/contraseña incorrecta - estado: false'
@@ -31,6 +33,24 @@ const login = async (req, res = response) => {
         if (!validarPass) {
             return res.status(400).json({
                 msg: 'Usuario/contraseña incorrecta  -password'
+            });
+        }
+        const role = await Role.findById(usuario.rol);
+
+        if (usuario.rol == 'GUARDIA_ROLE' || role.rol == 'GUARDIA_ROLE') {
+
+            const turnosBD = await Turnero.find().where({ estado: true })
+                .where({ guardia: usuario.id });
+            if (!turnosBD) {
+                return res.status(400).json({
+                    msg: `no hay coincidencias`
+                });
+            }
+            const token = await generarJWT(usuario.id);
+            return res.json({
+                results: (turnosBD) ? [turnosBD] : [],
+                usuario,
+                token
             });
         }
 
@@ -45,7 +65,7 @@ const login = async (req, res = response) => {
         console.log(error)
         return res.status(500).json({
             msg: 'Hable con el Admin'
-        }); 
+        });
     }
 }
 
