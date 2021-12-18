@@ -37,7 +37,12 @@ const login = async (req, res = response) => {
         if (role.rol == 'GUARDIA_ROLE') {
 
             const turnosBD = await Turnero.find().where({ estado: true })
-                .where({ guardia: usuario.id });
+                .where({ guardia: usuario.id })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
             if (!turnosBD) {
                 return res.status(400).json({
                     msg: `no hay coincidencias`

@@ -17,6 +17,7 @@ const obtenerTurneros = async (req = request, res = response) => {
       .populate('turno')
       .populate('usuario', 'nombre')
       .populate('cliente', 'nombre')
+      .populate('team', 'nombre')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
@@ -34,7 +35,8 @@ const obtenerTurnero = async (req, res = response) => {
     .populate('guardia')
     .populate('turno')
     .populate('usuario', 'nombre')
-    .populate('cliente', 'nombre');
+    .populate('cliente', 'nombre')
+    .populate('team', 'nombre');
 
   res.json(turno);
 }

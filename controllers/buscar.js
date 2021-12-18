@@ -134,7 +134,12 @@ const buscarTurnos = async (termino = '', res = response) => {
         const guardiaBD = await Usuario.findById(termino);
         if (guardiaBD) {
             const turnosBD = await Turnero.find().where({ estado: true })
-                .where({ guardia: termino });
+                .where({ guardia: termino })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
             if (!turnosBD) {
                 return res.status(400).json({
                     msg: `no hay coincidencias`
@@ -147,7 +152,12 @@ const buscarTurnos = async (termino = '', res = response) => {
         else {
             // const teamBD = await Team.findById(termino);
             const turnosBD = await Turnero.find().where({ estado: true })
-                .where({ team: termino });
+                .where({ team: termino })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
             if (!turnosBD)
                 return res.status(400).json({
                     msg: `no hay coincidencias`
