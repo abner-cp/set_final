@@ -47,17 +47,16 @@ const buscarUsuarios = async (termino = '', res = response) => {
             results: usuarios
         });
     }
-
 }
 
 
 const buscarGuardias = async (termino = '', res = response) => {
     if (termino == 'all') {
         const guardias = await Usuario.find({
-            $or: [{ rol: 'GUARDIA_ROLE' }],
+            $or: [{ rol: '60b7fbd0c86aab40dc8b5e9b' }],
             $and: [{ estado: true }]
         }).populate('team', 'nombre');
-        const totalGuardias = await Usuario.countDocuments({ estado: true, rol: 'GUARDIA_ROLE' });
+        const totalGuardias = await Usuario.countDocuments({ estado: true, rol: '60b7fbd0c86aab40dc8b5e9b' });
 
         return res.json({
             total: totalGuardias,
@@ -67,20 +66,21 @@ const buscarGuardias = async (termino = '', res = response) => {
     const esMongoID = isValidObjectId(termino);
     if (esMongoID) {
         const usuario = await Usuario.findById(termino);
-        if (usuario.rol.includes('GUARDIA_ROLE')) {
+        const role = await Role.findById(usuario.rol);
+        if (role.rol == 'GUARDIA_ROLE') {
             return res.json({
-                results: (usuario) ? [usuario] : []
-            })
+                results: usuario
+            });
         }
-        return res.json({
-            results: usuarios = await Usuario.find({ rol: 'GUARDIA_ROLE' })
-        })
+        return res.status(400).json({
+            msg: `no hay coincidencias`
+        });
     }
 
     const regex = new RegExp(termino, 'i');
     const usuarios = await Usuario.find({
         $or: [{ nombre: regex }, { correo: regex }],
-        $and: [{ estado: true }, { rol: 'GUARDIA_ROLE' }]
+        $and: [{ estado: true }, { rol: '60b7fbd0c86aab40dc8b5e9b' }]
     });
 
     res.json({
@@ -89,13 +89,14 @@ const buscarGuardias = async (termino = '', res = response) => {
     });
 }
 
+
 const buscarSupervisor = async (termino = '', res = response) => {
     if (termino == 'all') {
         const supervisores = await Usuario.find({
-            $or: [{ rol: 'SUPERVISOR_ROLE' }],
+            $or: [{ rol: '60b7fbeec86aab40dc8b5e9c' }],
             $and: [{ estado: true }]
         }).populate('team', 'nombre');
-        const totales = await Usuario.countDocuments({ estado: true, rol: 'SUPERVISOR_ROLE' });
+        const totales = await Usuario.countDocuments({ estado: true, rol: '60b7fbeec86aab40dc8b5e9c' });
 
         return res.json({
             total: totales,
@@ -105,7 +106,8 @@ const buscarSupervisor = async (termino = '', res = response) => {
     const esMongoID = isValidObjectId(termino);
     if (esMongoID) {
         const usuario = await Usuario.findById(termino);
-        if (usuario.rol.includes('SUPERVISOR_ROLE')) {
+        const role = await Role.findById(usuario.rol);
+        if (role.rol == 'SUPERVISOR_ROLE') {
             return res.json({
                 results: (usuario) ? [usuario] : []
             })
@@ -115,7 +117,7 @@ const buscarSupervisor = async (termino = '', res = response) => {
     const regex = new RegExp(termino, 'i');
     const usuarios = await Usuario.find({
         $or: [{ nombre: regex }, { correo: regex }],
-        $and: [{ estado: true }, { rol: 'SUPERVISOR_ROLE' }]
+        $and: [{ estado: true }, { rol: '60b7fbeec86aab40dc8b5e9c' }]
     });
 
     res.json({
