@@ -57,6 +57,7 @@ const usuariosGet = async (req = request, res = response) => {
   });
 }
 
+
 //obtenerUsuario 
 const obtenerUsuario = async (req, res = response) => {
   const { id } = req.params;

@@ -34,7 +34,9 @@ const obtenerTeam = async (req, res = response) => {
     .populate('cliente', 'nombre')
     .populate('guardias');
 
-  res.json(team);
+    const totalGuardias =team.guardias.length;
+
+  res.json({team, totalGuardias});
 }
 
 
