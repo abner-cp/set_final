@@ -28,6 +28,8 @@ router.get('/:id', [
 router.post('/', [
     validarJWT,
     //AdminRole,
+    check('team', 'El team es obligatorio').not().isEmpty(),
+    check('team', 'NO es un id mongo válido!!!').isMongoId(),
     check('guardia', 'El guardia es obligatorio').not().isEmpty(),
     check('guardia', 'NO es un id mongo válido!!!').isMongoId(),
     check('turno', 'El turno es obligatorio').not().isEmpty(),
@@ -35,6 +37,7 @@ router.post('/', [
     check('inicio', 'El inicio es obligatorio').not().isEmpty(),
     check('final', 'El final es obligatorio').not().isEmpty(),
     check('cliente', 'El cliente es obligatorio').not().isEmpty(),
+    check('cliente', 'NO es un id mongo válido!!!').isMongoId(),
     validarCampos
 ], crearTurnero);
 
