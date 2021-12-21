@@ -32,6 +32,8 @@ router.post('/', [
     check('direccion', 'ingrese una direccion').not().isEmpty(),
     check('region', 'ingrese región').not().isEmpty(),
     check('ciudad', 'ingrese ciudad').not().isEmpty(),
+    check('empresa', 'ingrese un empresa o consorcio').not().isEmpty(),
+    check('nivel', 'ingrese el nivel del cliente').not().isEmpty(),
     validarCampos
 ], crearCliente);
 

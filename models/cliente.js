@@ -7,6 +7,9 @@ const ClienteSchema = Schema({
         //require: [true, 'El Nombre es obligatorio'],
         //unique: true
     },
+    empresa: {
+        type: String,
+    },
     rut: {
         type: String,
         require: [true, 'El RUT es obligatorio'],
@@ -47,6 +50,10 @@ const ClienteSchema = Schema({
     ciudad: {
         type: String,
     },
+    nivel: {
+        type: Number,
+        default: 3
+    }
 
 });
 

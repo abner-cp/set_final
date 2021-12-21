@@ -16,7 +16,11 @@ const TeamSchema = Schema({
         default: true,
         require: true
     },
-    usuario:  {
+    creacion: {
+        type: Date,
+        default: Date.now,
+    },
+    admin:  {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
     },
@@ -29,10 +33,11 @@ const TeamSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
     },
-    cliente: {
+    clientes: [ {
         type: Schema.Types.ObjectId,
-        ref: 'Cliente'
-    }
+        ref: 'Cliente',
+        require: true
+    }]
 
 });
 

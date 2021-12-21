@@ -97,7 +97,6 @@ const eliminarTeam = async (req, res = response) => {
 }
 
 
-
 //agregar guardias a teams
 const agregarGuardias = async (id, req, res = response) => {
 
@@ -113,10 +112,8 @@ const agregarGuardias = async (id, req, res = response) => {
   });
   await Usuario.findByIdAndUpdate(guardia, { team: asignarGuardia });
 
-
   res.json(asignarGuardia);
 }
-
 
 //eliminar guardias a teams
 const eliminarGuardias = async (id, req, res = response) => {
@@ -136,6 +133,40 @@ const eliminarGuardias = async (id, req, res = response) => {
   res.json(eliminarGuardia);
 }
 
+//agregar cliente a teams
+const agregarCliente = async (id, req, res = response) => {
+
+  const { cliente } = req.body;
+  if (cliente == null) {
+    return res.status(400).json({
+      msg: `El cliente no es válido!`
+    });
+  }
+
+  const asignarCliente = await Team.findByIdAndUpdate(id, {
+    $push: { clientes: cliente },
+  });
+  //await Usuario.findByIdAndUpdate(guardia, { team: asignarGuardia });
+  res.json(asignarCliente);
+}
+
+//eliminar cliente a teams
+const eliminarCliente = async (id, req, res = response) => {
+
+  const { cliente } = req.body;
+  if (cliente == null) {
+    return res.status(400).json({
+      msg: `El cliente no es válido!`
+    });
+  }
+  const eliminarCliente = await Team.findByIdAndUpdate(id, {
+    $pull: { clientes: cliente },
+  });
+
+  //await Usuario.findByIdAndUpdate(guardia, {team: null});
+  res.json(eliminarCliente);
+}
+
 
 
 const guardias = (req, res = response) => {
@@ -152,6 +183,12 @@ const guardias = (req, res = response) => {
   switch (coleccion) {
     case 'add':
       agregarGuardias(id, req, res);
+      break;
+    case 'aCliente':
+      agregarCliente(id, req, res);
+      break;
+    case 'bCliente':
+      eliminarCliente(id, req, res);
       break;
 
     case 'del':

@@ -35,7 +35,7 @@ const obtenerCliente = async (req, res = response) => {
 //crear cliente
 const crearCliente = async (req, res = response) => {
 
-    const { nombre, rut, celular, correo, direccion, region, ciudad } = req.body;
+    const { nombre, rut, celular, correo, direccion, region, ciudad, empresa, nivel } = req.body;
     const clienteBD = await Cliente.findOne({ nombre });
 
     if (clienteBD) {
@@ -64,6 +64,8 @@ const crearCliente = async (req, res = response) => {
     //generar data para guardar
     const data = {
         nombre,
+        empresa,
+        nivel,
         rut,
         celular,
         correo,

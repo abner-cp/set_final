@@ -1,4 +1,5 @@
-const { response } = require("express")
+const { response } = require("express");
+const { Role } = require("../models");
 
 
 const AdminRole = (req, res = response, next) => {
@@ -10,7 +11,9 @@ const AdminRole = (req, res = response, next) => {
     }
     const { rol, nombre } =req.usuario;
 
-    if( rol !== 'ADMIN_ROLE' ){
+    const validarRol = String(rol);  
+
+    if( validarRol !== '60b7fb45c86aab40dc8b5e99' ){
         return res.status(401).json({
             msg: `${nombre} no es Administrador- No está autorizado para esto`
         });

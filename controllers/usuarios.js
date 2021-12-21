@@ -42,12 +42,13 @@ const usuariosPut = async (req, res = response) => {
 
 //GET
 const usuariosGet = async (req = request, res = response) => {
-  const { limite = 10, desde = 0 } = req.query;
+  const { limite = 20, desde = 0 } = req.query;
   const query = { estado: true };  //solo los usuarios activos en bd
 
   const [total, usuarios] = await Promise.all([ //envío arreglo, demora menos 
     Usuario.countDocuments(query),
     Usuario.find(query).populate('region', 'nombre')
+    .populate('rol')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
