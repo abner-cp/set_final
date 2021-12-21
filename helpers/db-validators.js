@@ -55,13 +55,17 @@ const existeClienteById = async (id) => {
 const existeSupervisorById = async (id) => {
      //verificar id
      const existeSupervisor = await Usuario.findById(id);
+     const validarRol = await Role.findById(existeSupervisor.rol);  
      if (!existeSupervisor) {
           throw new Error(`El Supervisor: ${id}, no existe...`);
      }
-     if (existeSupervisor.rol !== 'SUPERVISOR_ROLE') {
+
+    
+     if (validarRol.rol !== 'SUPERVISOR_ROLE') {
           throw new Error(`El Usuario: ${id}, no es supervisor...`);
      }
 }
+
 const existeGuardiaById = async (id) => {
      //verificar id
      const existeGuardia = await Usuario.findById(id);

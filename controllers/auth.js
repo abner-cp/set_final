@@ -1,16 +1,13 @@
 const { response } = require("express");
-const Usuario = require("../models/usuario");
 
 const bcryptjs = require('bcryptjs');
 const { generarJWT } = require("../helpers/generar-jwt");
 const { googleVerify } = require("../helpers/google-verify");
-const { Turnero, Role } = require("../models");
-
+const { Usuario, Turnero, Role } = require("../models");
 
 
 const login = async (req, res = response) => {
     const { correo, password } = req.body;
-
     try {
 
         //verificar email 
@@ -37,10 +34,15 @@ const login = async (req, res = response) => {
         }
         const role = await Role.findById(usuario.rol);
 
-        if (usuario.rol == 'GUARDIA_ROLE' || role.rol == 'GUARDIA_ROLE') {
+        if (role.rol == 'GUARDIA_ROLE') {
 
             const turnosBD = await Turnero.find().where({ estado: true })
-                .where({ guardia: usuario.id });
+                .where({ guardia: usuario.id })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
             if (!turnosBD) {
                 return res.status(400).json({
                     msg: `no hay coincidencias`
@@ -59,7 +61,7 @@ const login = async (req, res = response) => {
         res.json({
             usuario,
             token
-        })
+        });
 
     } catch (error) {
         console.log(error)

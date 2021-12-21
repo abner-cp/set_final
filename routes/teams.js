@@ -9,7 +9,7 @@ const { crearTeam,
     guardias} = require('../controllers/teams');
 const { existeTeamById, existeUsuarioById, existeSupervisorById } = require('../helpers/db-validators');
 
-const { validarCampos, validarJWT, AdminRole, validarGuardiaTeams} = require('../middlewares');
+const { validarCampos, validarJWT, AdminRole, validarGuardiaTeams, validarClienteTeams} = require('../middlewares');
 
 const router = Router();
 
@@ -66,6 +66,24 @@ router.delete('/:coleccion/:id', [
     check('id').custom(existeTeamById),
     validarCampos
 ], guardias);
+
+//agregar cliente a team -privado- con token valido
+router.put('/:coleccion/:cliente/:id', [
+    validarJWT,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    check('id').custom(existeTeamById),
+    validarClienteTeams,
+    validarCampos
+], guardias);
+//borrar cliente a team -privado- con token valido
+router.delete('/:coleccion/:cliente/:id', [
+    validarJWT,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    check('id').custom(existeTeamById),
+    validarCampos
+], guardias);
+
+
 
 //borrar un team -privado- Admin
 router.delete('/:id',[

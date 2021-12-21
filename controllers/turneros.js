@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Team, Usuario, Turnero } = require("../models");
+const { Team, Usuario, Turnero, Cliente } = require("../models");
 const { guardias } = require("./teams");
 
 
@@ -17,6 +17,7 @@ const obtenerTurneros = async (req = request, res = response) => {
       .populate('turno')
       .populate('usuario', 'nombre')
       .populate('cliente', 'nombre')
+      .populate('team', 'nombre')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
@@ -34,7 +35,8 @@ const obtenerTurnero = async (req, res = response) => {
     .populate('guardia')
     .populate('turno')
     .populate('usuario', 'nombre')
-    .populate('cliente', 'nombre');
+    .populate('cliente', 'nombre')
+    .populate('team', 'nombre');
 
   res.json(turno);
 }
@@ -44,35 +46,40 @@ const obtenerTurnero = async (req, res = response) => {
 //crear turnero
 const crearTurnero = async (req, res = response) => {
 
-  const { estado, usuario, guardia, inicio, ...body } = req.body;
+  const { estado, usuario, guardia, inicio, cliente, team, ...body } = req.body;
   const fechaInicio = new Date(inicio);
 
+  const clienteBD = await Cliente.findById(cliente);
   const guardiaBD = await Usuario.findById(guardia);
-  const teamBD= guardiaBD.team;
+  const teamBD = await Team.findById(team);
 
-  /*const turneroBD = await Turnero.findOne({ nombre: body });
-  if (turneroBD) {
+  if (!teamBD.clientes.includes(cliente)) {
     return res.status(400).json({
-      msg: `Ese turno, en esa fecha, ya existe!`
+      msg: `El cliente ${clienteBD.nombre}, NO existe en teams: ${teamBD.nombre}`
     });
-  }*/
+  }
+  if (!teamBD.guardias.includes(guardia)) {
+    return res.status(400).json({
+      msg: `El guardia ${guardiaBD.nombre}, NO existe en teams: ${teamBD.nombre}`
+    });
+  }
 
   //validar turnos repetidos en guardias y max 6 turnos x semana...verificar el tema de los dias repetitivos(array)
   const turnosBD = await Turnero.find().where({ estado: true })
-                                        .where({guardia: guardia});
-  if(turnosBD.length> 5){
+    .where({ guardia: guardia });
+  if (turnosBD.length > 5) {
     return res.status(400).json({
-        msg: `El guardia ${guardiaBD.nombre}, Máximo 6 turnos semanales!`
-      });
-    }
-  const validarFecha= turnosBD.find(elemento => elemento.inicio==fechaInicio);
- console.log(validarFecha);
- console.log(fechaInicio);
-  if(validarFecha){
+      msg: `El guardia ${guardiaBD.nombre}, Máximo 6 turnos semanales!`
+    });
+  }
+  const validarFecha = await turnosBD.find(elemento => elemento.inicio == fechaInicio);
+  console.log(validarFecha); //llega undefined
+  console.log(fechaInicio);
+  if (validarFecha) {
     return res.status(400).json({
-        msg: `El guardia ${guardiaBD.nombre}, Ya tiene asignado un turno en esa fecha!`
-      });
-    }
+      msg: `El guardia ${guardiaBD.nombre}, Ya tiene asignado un turno en esa fecha!`
+    });
+  }
 
   console.log(turnosBD);
 
@@ -81,7 +88,8 @@ const crearTurnero = async (req, res = response) => {
     ...body,
     inicio: inicio,
     guardia: guardia,
-    team: teamBD,
+    team,
+    cliente: cliente,
     usuario: req.usuario._id
   }
   const turno = new Turnero(data);

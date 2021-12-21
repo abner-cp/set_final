@@ -3,6 +3,7 @@ const validaCampos  = require('../middlewares/validar-campos'); //middleware per
 const validaJWT  = require('../middlewares/validar-jwt');
 const  validaRole  = require('../middlewares/validar-roles');
 const  validarGuardiaTeams  = require('../middlewares/validar-guardia-team');
+const  validarClienteTeams  = require('../middlewares/validar-cliente-team');
 const  validarArchivo  = require('../middlewares/validar-archivo');
 
 
@@ -12,5 +13,6 @@ module.exports= {
     ...validaJWT,
     ...validaRole,
     ...validarGuardiaTeams,
+    ...validarClienteTeams,
     ...validarArchivo,
 }
