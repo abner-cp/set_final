@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Team, Usuario, Turnero, Cliente } = require("../models");
+const { Team, Usuario, Turnero, Cliente, Turno } = require("../models");
 const { guardias } = require("./teams");
 
 
@@ -46,12 +46,18 @@ const obtenerTurnero = async (req, res = response) => {
 //crear turnero
 const crearTurnero = async (req, res = response) => {
 
-  const { estado, usuario, guardia, inicio, cliente, team, ...body } = req.body;
+  const { estado, usuario, guardia, inicio, cliente, team, turno, ...body } = req.body;
   const fechaInicio = new Date(inicio);
 
   const clienteBD = await Cliente.findById(cliente);
   const guardiaBD = await Usuario.findById(guardia);
   const teamBD = await Team.findById(team);
+  const turnoBD = await Turno.findById(turno);
+  if(!turnoBD){
+    return res.status(400).json({
+      msg: `Proporcione un turno válido`
+    });
+  }
 
   if (!teamBD.clientes.includes(cliente)) {
     return res.status(400).json({
@@ -88,16 +94,17 @@ const crearTurnero = async (req, res = response) => {
     ...body,
     inicio: inicio,
     guardia: guardia,
+    turno,
     team,
     cliente: cliente,
     usuario: req.usuario._id
   }
-  const turno = new Turnero(data);
+  const newTurno = new Turnero(data);
 
   //guardar BD
-  await turno.save();
+  await newTurno.save();
 
-  res.status(201).json(turno);
+  res.status(201).json(newTurno);
 }
 
 
@@ -115,6 +122,80 @@ const actualizarTurnero = async (req, res = response) => {
 }
 
 
+//iniciar un turno (guardia)
+const iniciarTurnero = async (id, req, res = response) => {
+
+ // const { id } = req.params;
+  const turnero = await Turnero.findById(id);
+  console.log(turnero.guardia);
+  console.log(req.usuario._id);
+  const user1 = await Usuario.findById(turnero.guardia);
+  const user2 = await Usuario.findById(req.usuario._id);
+  if(!user1._id.equals(user2._id)){
+    return res.status(400).json({
+      msg: `Acceso denegado/ Guardia no corresponde`
+    });
+  }
+
+  if(!turnero){
+    return res.status(400).json({
+      msg: `El turno no existe`
+    });
+  }
+const turno = await Turno.findById(turnero.turno);
+if(turnero.estado == false){
+  return res.status(400).json({
+    msg: `EL turno ya caducó`
+  });
+}
+if(turnero.encurso == true){
+  return res.status(400).json({
+    msg: `EL turno ya está en CURSO`
+  });
+}
+//falta validar fecha de turno
+await Turnero.findByIdAndUpdate(id,  { encurso: true });
+
+  res.json(turnero);
+}
+
+
+//finalizar un turno (guardia)
+const finalizarTurnero = async (id, req, res = response) => {
+
+  //const { id } = req.params;
+  const turnero = await Turnero.findById(id);
+  const user1 = await Usuario.findById(turnero.guardia);
+  const user2 = await Usuario.findById(req.usuario._id);
+  if(!user1._id.equals(user2._id)){
+    return res.status(400).json({
+      msg: `Acceso denegado/ Guardia no corresponde`
+    });
+  }
+  if(!turnero){
+    return res.status(400).json({
+      msg: `El turno no existe`
+    });
+  }
+  if(turnero.encurso == false){
+    return res.status(400).json({
+      msg: `El turno No Está En Curso`
+    });
+  }
+ 
+  const newTurnero =await Turnero.findByIdAndUpdate(id,  { encurso: false, estado: false });
+  const guardia = await Usuario.findById(turnero.guardia);
+  let horas= Number;
+  horas = guardia.totalHoras +8;
+  console.log(horas);
+  console.log(req.usuario._id);
+
+  const user= await Usuario.findByIdAndUpdate(guardia._id, {totalHoras: horas});
+
+  res.json({ newTurnero, user});
+}
+
+
 //borrarTeam - estado:false
 const eliminarTurnero = async (req, res = response) => {
 
@@ -123,6 +204,27 @@ const eliminarTurnero = async (req, res = response) => {
 
   res.json(turnoBorrado);
 }
+
+const turnos = (req, res = response) => {
+
+  const { coleccion, id } = req.params;
+
+
+  switch (coleccion) {
+    case 'in':
+      iniciarTurnero(id, req, res);
+      break;
+    case 'out':
+      finalizarTurnero(id, req, res);
+      break;
+   
+    default:
+      res.status(500).json({
+        msg: 'busqueda incompleta!!!'
+      })
+  }
+}
+
 
 
 
@@ -137,5 +239,8 @@ module.exports = {
   obtenerTurnero,
   crearTurnero,
   actualizarTurnero,
-  eliminarTurnero
+  eliminarTurnero,
+  iniciarTurnero,
+  finalizarTurnero, 
+  turnos
 }

@@ -12,9 +12,6 @@ const TurneroSchema = Schema({
     inicio:{
         type: Date
     },
-    final:{
-        type: Date
-    },
     observacion: [{
         type: [String],
         default: [],
@@ -33,7 +30,11 @@ const TurneroSchema = Schema({
     },
     estado: {
         type: Boolean,
-        default: true
+        default: true //solo disponible en true, de lo contrario el turno ya se efectuó
+    },
+    encurso: {
+        type: Boolean,
+        default: false //cuando está en true, significa "Turno en Curso"!
     },
 });
 

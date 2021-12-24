@@ -65,6 +65,10 @@ const UsuarioSchema = Schema({
         ref: 'Team',
         //require: true
     },
+    totalHoras: {
+        type: Number,
+        default: 0
+    },
 
 });
 

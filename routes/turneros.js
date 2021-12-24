@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { obtenerTurneros, obtenerTurnero, crearTurnero, actualizarTurnero, eliminarTurnero } = require('../controllers/turneros');
+const { obtenerTurneros, obtenerTurnero, crearTurnero, actualizarTurnero, eliminarTurnero,  turnos} = require('../controllers/turneros');
 
 const { validarCampos, validarJWT, AdminRole, validarGuardiaTeams} = require('../middlewares');
 
@@ -35,7 +35,6 @@ router.post('/', [
     check('turno', 'El turno es obligatorio').not().isEmpty(),
     check('turno', 'NO es un id mongo válido!!!').isMongoId(),
     check('inicio', 'El inicio es obligatorio').not().isEmpty(),
-    check('final', 'El final es obligatorio').not().isEmpty(),
     check('cliente', 'El cliente es obligatorio').not().isEmpty(),
     check('cliente', 'NO es un id mongo válido!!!').isMongoId(),
     validarCampos
@@ -49,6 +48,16 @@ router.put('/:id', [
     //check('id').custom(existeTeamById),
     validarCampos
 ], actualizarTurnero);
+
+//iniciar una turno -privado- con token valido de guardia
+router.put('/:coleccion/:id', [
+    validarJWT,
+    //AdminRole,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    //check('id').custom(existeTeamById),
+    validarCampos
+], turnos);
+
 
 
 //borrar un turnero -privado- Admin
