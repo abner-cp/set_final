@@ -1,7 +1,7 @@
 
 const { response } = require('express');
 const { isValidObjectId } = require('mongoose');
-const { Usuario, Turnero, Team, Role } = require('../models');
+const { Usuario, Turnero, Team, Role, Cliente } = require('../models');
 const { $where } = require('../models/usuario');
 const usuario = require('../models/usuario');
 
@@ -11,7 +11,9 @@ const coleccionesPermitidas = [
     'turnos',
     'roles',
     'teams',
+    'teams2',
     'clientes',
+    'clientes2',
     'guardias',
     'supervisor',
 ];
@@ -193,8 +195,79 @@ const buscarTeams = async (termino = '', res = response) => {
         //total: usuario.length,
         results: teams
     });
-
 }
+
+//busca teams por id de supervisor
+const buscarTeams2 = async (termino = '', res = response) => {
+    const esMongoID = isValidObjectId(termino);
+    if (esMongoID) {
+        const supervisor = await Team.find({ supervisor: termino, estado: true });
+        if (supervisor) {
+            const total = supervisor.length;
+            return res.json({
+                total,
+                results: (supervisor) ? [supervisor] : []
+            })
+        }
+        return res.status(400).json({
+            msg: `no hay registros`
+        });
+
+    }
+    return res.status(400).json({
+        msg: `ID invalida`
+    });
+}
+
+//busca clientes por id de teams
+const buscarClientes2 = async (termino = '', res = response) => {
+    const esMongoID = isValidObjectId(termino);
+    if (esMongoID) {
+        const team = await Team.findById(termino);
+        if (team) {
+            const clientes = team.clientes;
+            const total = clientes.length;
+            return res.json({
+                total,
+                results: (clientes) ? [clientes] : []
+            })
+        }
+        return res.status(400).json({
+            msg: `no hay registros`
+        });
+
+    }
+    return res.status(400).json({
+        msg: `ID invalida`
+    });
+
+   /* const userMessage = await Team.aggregate(
+        [
+            {
+                $loolup:
+                {
+                    from: 'clientes',
+                    localField: 'clientes',
+                    foreignField: '_id',
+                    as: 'userMessage'
+                }
+            },
+            {$unwind: "$userMessage"},
+            { $match: { _id: ObjectId (termino) } },
+
+            {
+                $project:
+                {
+                    name: '$userMessage.nombre',
+                    segundoNombre: '$userMessage.empresa',
+                }
+            },
+        ]
+    )
+    userMessage.map(() => { })
+    return userMessage;*/
+}
+
 
 const buscarClientes = async (termino = '', res = response) => {
     const esMongoID = isValidObjectId(termino);
@@ -259,8 +332,15 @@ const buscar = (req, res = response) => {
             buscarTeams(termino, res);
             break;
 
+        case 'teams2':
+            buscarTeams2(termino, res);
+            break;
+
         case 'clientes':
             buscarClientes(termino, res);
+            break;
+        case 'clientes2':
+            buscarClientes2(termino, res);
             break;
 
         case 'roles':

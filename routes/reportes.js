@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
-const { obtenerReporte, obtenerReportes, crearReporte } = require('../controllers/reportes');
+const { obtenerReporte, obtenerReportes, crearReporte, totales } = require('../controllers/reportes');
 
 
 const { validarCampos, validarArchivo } = require('../middlewares');
@@ -17,21 +17,15 @@ router.post('/:coleccion/:id', [
     validarCampos
 ], crearReporte)
 
-
-router.get('/:coleccion/:id', [
-    check('id', 'El ID debe ser de Mongo').isMongoId(),
-    validarCampos
-], obtenerReporte)
-
 router.get('', [
    // check('id', 'El ID debe ser de Mongo').isMongoId(),
     //validarCampos
 ], obtenerReportes)
 
-router.get('/:coleccion/:id', [
-    check('id', 'El ID debe ser de Mongo').isMongoId(),
-    validarCampos
-], obtenerReportes)
+router.get('/:coleccion/:termino', [
+    //check('id', 'El ID debe ser de Mongo').isMongoId(),
+   // validarCampos
+], totales)
 
 
 

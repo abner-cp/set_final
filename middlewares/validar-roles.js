@@ -25,14 +25,15 @@ const AdminRole = (req, res = response, next) => {
 
 
 const tieneRole = ( ...roles ) => {
-    return (req, res= response, next) => {
+    return async(req, res= response, next) => {
 
         if( !req.usuario ){
             return res.status(500).json({
                 msg: 'Se quiere verificar rol, sin validar token'
             });
         }
-        if ( !roles.includes( req.usuario.rol ) ){
+        const rolesbd = await Role.findById(req.usuario.rol);
+        if ( !rolesbd) {
             return res.status(401).json({
                 msg: `El servicio requiere uno de estos roles ${ roles }`
             });

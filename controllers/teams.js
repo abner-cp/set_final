@@ -12,7 +12,7 @@ const obtenerTeams = async (req = request, res = response) => {
     Team.countDocuments(query),
     Team.find(query)
       .populate('usuario', 'nombre')
-      .populate('cliente', 'nombre')
+      .populate('clientes', 'nombre')
       .populate('supervisor', 'nombre')
       .populate('guardias')
       .skip(Number(desde))
@@ -31,7 +31,7 @@ const obtenerTeam = async (req, res = response) => {
   const team = await Team.findById(id)
     .populate('usuario', 'nombre')
     .populate('supervisor', 'nombre')
-    .populate('cliente', 'nombre')
+    .populate('clientes', 'nombre')
     .populate('guardias');
 
     const totalGuardias =team.guardias.length;

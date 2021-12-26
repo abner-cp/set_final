@@ -171,6 +171,49 @@ const eliminarReporte = async (req, res = response) => {
 }
 
 
+const obtenerTotales = async (termino = '', req,  res = response) => {
+    if (termino == 'all') {
+        const totalEquipos = await Team.countDocuments();
+        const totalGuardias = await Usuario.countDocuments({ rol: '60b7fbd0c86aab40dc8b5e9b', estado: true });
+        const totalSupervisores = await Usuario.countDocuments({ rol: '60b7fbeec86aab40dc8b5e9c', estado: true });
+        console.log(totalGuardias);
+        return res.json({totalEquipos, totalGuardias, totalSupervisores});
+    }
+    return res.status(400).json({
+        msg: `proporcione termino de busqueda`
+    });
+}
+
+
+
+
+const totales = (req, res = response) => {
+
+    const { coleccion, termino } = req.params;
+  
+    /*if (!coleccionesPermitidas.includes(coleccion)) {
+  
+      return res.status(400).json({
+        msg: `las colecciones permitidas son: ${coleccionesPermitidas}`
+      })
+    }*/
+  
+    switch (coleccion) {
+      case 'totales':
+        obtenerTotales(termino, req, res);
+        break;
+      case 'aCliente':
+        agregarCliente(termino, req, res);
+        break;
+
+      default:
+        res.status(500).json({
+          msg: 'busqueda incompleta!!!'
+        })
+    }
+  }
+  
+
 
 
 
@@ -178,4 +221,6 @@ module.exports = {
     crearReporte,
     obtenerReporte,
     obtenerReportes,
+    eliminarReporte,
+    totales
 }
