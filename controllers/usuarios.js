@@ -20,7 +20,7 @@ const usuariosPost = async (req, res) => {
   //guardar bd
   await usuario.save();
   res.json({
-    usuario, 
+    usuario,
   });
 }
 
@@ -48,7 +48,7 @@ const usuariosGet = async (req = request, res = response) => {
   const [total, usuarios] = await Promise.all([ //envío arreglo, demora menos 
     Usuario.countDocuments(query),
     Usuario.find(query).populate('region', 'nombre')
-    .populate('rol')
+      .populate('rol')
       .skip(Number(desde))
       .limit(Number(limite))
   ]);
@@ -62,7 +62,9 @@ const usuariosGet = async (req = request, res = response) => {
 //obtenerUsuario 
 const obtenerUsuario = async (req, res = response) => {
   const { id } = req.params;
-  const usuario = await Usuario.findById(id);
+  const usuario = await Usuario.findById(id)
+    .populate('rol', 'rol')
+    .populate('region', 'nombre');
 
   res.json(usuario);
 }
@@ -75,8 +77,19 @@ const usuariosDelete = async (req = request, res = response) => {
 
   const uid = req.uid;
   const usuario = await Usuario.findById(id);
+  if (!usuario) {
+    return res.status(400).json({
+      msg: `El usuario no existe`
+    });
+  }
+
   const teamUs = await Team.findById(usuario.team);
-  const arrayGuardias = teamUs.guardias;
+  if (!teamUs) {
+    const usuarioNew = await Usuario.findByIdAndUpdate(id, { estado: false });
+    res.json(usuarioNew);
+  }
+  let arrayGuardias = teamUs.guardias;
+
 
   if (!arrayGuardias.includes(usuario._id)) {
     return res.status(400).json({

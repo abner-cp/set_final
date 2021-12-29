@@ -4,6 +4,7 @@ const { isValidObjectId } = require('mongoose');
 const { Usuario, Turnero, Team, Role, Cliente } = require('../models');
 const { $where } = require('../models/usuario');
 const usuario = require('../models/usuario');
+const { turnos } = require('./turneros');
 
 
 const coleccionesPermitidas = [
@@ -129,12 +130,29 @@ const buscarSupervisor = async (termino = '', res = response) => {
 }
 
 
-const buscarTurnos = async (termino = '', res = response) => {
+const buscarTurnos = async (termino = '',req, res = response) => {
     const esMongoID = isValidObjectId(termino);
+    const {desde, hasta} = req.body;
+    if(desde != '' & hasta != ''){
+        console.log('esto es por fechas');
+        const turnosBD = await Turnero.find().where({ inicio: {$gte: new Date(desde), $lte: new Date(hasta)}})
+        .where({ guardia: termino })
+        .populate('guardia')
+        .populate('turno')
+        .populate('usuario', 'nombre')
+        .populate('cliente', 'nombre')
+        .populate('team', 'nombre');
+    
+        return res.status(400).json({
+            total: turnosBD.length,
+            results: (turnosBD) ? [turnosBD] : []
+        });
+    }
 
     if (esMongoID) {
         const guardiaBD = await Usuario.findById(termino);
         if (guardiaBD) {
+            console.log('esto es sin fechas');
             const turnosBD = await Turnero.find().where({ estado: true })
                 .where({ guardia: termino })
                 .populate('guardia')
@@ -148,6 +166,7 @@ const buscarTurnos = async (termino = '', res = response) => {
                 });
             }
             return res.json({
+                total: turnosBD.length,
                 results: (turnosBD) ? [turnosBD] : []
             })
         }
@@ -172,7 +191,7 @@ const buscarTurnos = async (termino = '', res = response) => {
     }
 
     return res.status(400).json({
-        msg: `proporciones un termino válido`
+        msg: `proporcione un termino válido`
     });
 }
 
@@ -325,7 +344,7 @@ const buscar = (req, res = response) => {
             break;
 
         case 'turnos':
-            buscarTurnos(termino, res);
+            buscarTurnos(termino, req, res);
             break;
 
         case 'teams':
