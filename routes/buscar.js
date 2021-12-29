@@ -1,13 +1,13 @@
 
 const { Router }= require('express');
 const { buscar } = require('../controllers/buscar');
-const { validarJWT, AdminRole } = require('../middlewares');
+const { validarJWT, AdminRole, Admin_super_Role } = require('../middlewares/index');
 
 const router = Router();
 
 router.get('/:coleccion/:termino', [
     validarJWT,
-    AdminRole,
+    Admin_super_Role,
 ], buscar)
 
 
