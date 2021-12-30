@@ -7,7 +7,7 @@ const router = Router();
 
 router.get('/:coleccion/:termino', [
     validarJWT,
-    Admin_super_Role,
+    //Admin_super_Role,
 ], buscar)
 
 

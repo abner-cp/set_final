@@ -40,7 +40,7 @@ router.post('/', [
     validarCampos
 ], crearTurnero);
 
-//actualizar un team -privado- con token valido
+//actualizar un turnero -privado- con token valido
 router.put('/:id', [
     validarJWT,
     //AdminRole,
@@ -49,8 +49,16 @@ router.put('/:id', [
     validarCampos
 ], actualizarTurnero);
 
-//iniciar una turno -privado- con token valido de guardia
+//iniciar un turno -privado- con token valido de guardia
 router.put('/:coleccion/:id', [
+    validarJWT,
+    //AdminRole,
+    check('id', 'NO es un id mongo válido!!!').isMongoId(),
+    //check('id').custom(existeTeamById),
+    validarCampos
+], turnos);
+
+router.get('/:coleccion/:id', [
     validarJWT,
     //AdminRole,
     check('id', 'NO es un id mongo válido!!!').isMongoId(),

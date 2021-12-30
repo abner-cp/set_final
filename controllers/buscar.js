@@ -133,21 +133,6 @@ const buscarSupervisor = async (termino = '', res = response) => {
 const buscarTurnos = async (termino = '',req, res = response) => {
     const esMongoID = isValidObjectId(termino);
     const {desde, hasta} = req.body;
-    if(desde != '' & hasta != ''){
-        console.log('esto es por fechas');
-        const turnosBD = await Turnero.find().where({ inicio: {$gte: new Date(desde), $lte: new Date(hasta)}})
-        .where({ guardia: termino })
-        .populate('guardia')
-        .populate('turno')
-        .populate('usuario', 'nombre')
-        .populate('cliente', 'nombre')
-        .populate('team', 'nombre');
-    
-        return res.status(400).json({
-            total: turnosBD.length,
-            results: (turnosBD) ? [turnosBD] : []
-        });
-    }
 
     if (esMongoID) {
         const guardiaBD = await Usuario.findById(termino);

@@ -3,48 +3,48 @@ const PDF = require('pdfkit-construct');
 const fs = require('fs');
 
 const { response } = require("express");
-const { Turno, Usuario, Team } = require("../models");
+const { Turno, Usuario, Team, Turnero } = require("../models");
 const { listeners, events, discriminator } = require('../models/usuario');
-const { set } = require('mongoose');
+const { set, isValidObjectId } = require('mongoose');
 
 
 
 //obtenerReportes - páginado- total- populate
 const obtenerReportes = async (req = request, res = response) => {
 
-   const usuarios= await Usuario.find({estado: true});
-   const turnos= await Turno.find({estado: true});
-   let count = 1;
-   const registros = usuarios.map( (Usuario) => {
-       const registro = {
-           nro: count,
-           nombre: Usuario.nombre,
-           apellido: Usuario.apellido,
-           correo: Usuario.correo,
-           ingreso: Usuario.ingreso,
+    const usuarios = await Usuario.find({ estado: true });
+    const turnos = await Turno.find({ estado: true });
+    let count = 1;
+    const registros = usuarios.map((Usuario) => {
+        const registro = {
+            nro: count,
+            nombre: Usuario.nombre,
+            apellido: Usuario.apellido,
+            correo: Usuario.correo,
+            ingreso: Usuario.ingreso,
 
-       }
-       count++;
-       return registro;
+        }
+        count++;
+        return registro;
 
-   });
-   
-   console.log(turnos);
-   const totalUsuarios = await Usuario.countDocuments({estado: true});
+    });
 
-   const teams= await Team.find({estado: true}).populate('cliente', 'nombre');
-   const totalTeams = await Team.countDocuments({estado: true});
+    console.log(turnos);
+    const totalUsuarios = await Usuario.countDocuments({ estado: true });
 
-    const doc = new PDF( { bufferPage: true } );
-   const filename= `rpt${Date.now()}.pdf`;
+    const teams = await Team.find({ estado: true }).populate('cliente', 'nombre');
+    const totalTeams = await Team.countDocuments({ estado: true });
+
+    const doc = new PDF({ bufferPage: true });
+    const filename = `rpt${Date.now()}.pdf`;
 
     const stream = res.writeHead(200, {
         'Content-Type': 'application/pdf',
-        'Content-disposition': `attachment`+`filename=${filename}`
+        'Content-disposition': `attachment` + `filename=${filename}`
     });
 
-    doc.on('data', (data) => {stream.write(data)});
-    doc.on('end', () => {stream.end()});
+    doc.on('data', (data) => { stream.write(data) });
+    doc.on('end', () => { stream.end() });
 
 
     // const resultados = [
@@ -55,15 +55,15 @@ const obtenerReportes = async (req = request, res = response) => {
     //     }
     // ];
 
-    
+
     doc.image('./assets/logo.png', {
         fit: [70, 70],
         align: 'center',
         valign: 'center'
-      });
+    });
 
     doc.setDocumentHeader({
-        
+
         height: '26'
     }, () => {
         doc.fontSize(15).text('Reportes de Usuarios', {
@@ -82,16 +82,16 @@ const obtenerReportes = async (req = request, res = response) => {
             align: 'right'
         });
 
-        
+
     });
 
     doc.addTable([
-        {key: 'nro', label: 'nro', align: 'left'},
-        {key: 'nombre', label: 'nombre', align: 'left'},
-        {key: 'apellido', label: 'apellido', align: 'left'},
-        {key: 'correo', label: 'Email', align: 'left'},
-        {key: 'ingreso', label: 'fecha_ingreso', align: 'left'},
-    ], registros,  {
+        { key: 'nro', label: 'nro', align: 'left' },
+        { key: 'nombre', label: 'nombre', align: 'left' },
+        { key: 'apellido', label: 'apellido', align: 'left' },
+        { key: 'correo', label: 'Email', align: 'left' },
+        { key: 'ingreso', label: 'fecha_ingreso', align: 'left' },
+    ], registros, {
         border: null,
         width: "fill_body",
         striped: true,
@@ -104,7 +104,7 @@ const obtenerReportes = async (req = request, res = response) => {
     })
 
     doc.render();
-   
+
     doc.end();
 
 }
@@ -171,17 +171,69 @@ const eliminarReporte = async (req, res = response) => {
 }
 
 
-const obtenerTotales = async (termino = '', req,  res = response) => {
+const obtenerTotales = async (termino = '', req, res = response) => {
     if (termino == 'all') {
         const totalEquipos = await Team.countDocuments();
         const totalGuardias = await Usuario.countDocuments({ rol: '60b7fbd0c86aab40dc8b5e9b', estado: true });
         const totalSupervisores = await Usuario.countDocuments({ rol: '60b7fbeec86aab40dc8b5e9c', estado: true });
         console.log(totalGuardias);
-        return res.json({totalEquipos, totalGuardias, totalSupervisores});
+        return res.json({ totalEquipos, totalGuardias, totalSupervisores });
     }
     return res.status(400).json({
         msg: `proporcione termino de busqueda`
     });
+}
+const rptTurnos = async (termino = '', req, res = response) => {
+    const esMongoID = isValidObjectId(termino);
+    const { desde, hasta } = req.body;
+    if (desde !== '' & hasta !== '') {
+        console.log('esto es por fechas');
+        const turnosBD = await Turnero.find().where({ inicio: { $gte: new Date(desde), $lte: new Date(hasta) } })
+            .where({ guardia: termino })
+            .populate('guardia')
+            .populate('turno')
+            .populate('usuario', 'nombre')
+            .populate('cliente', 'nombre')
+            .populate('team', 'nombre');
+
+        return res.status(400).json({
+            total: turnosBD.length,
+            results: (turnosBD) ? [turnosBD] : []
+        });
+    }
+
+    if (esMongoID) {
+        const guardiaBD = await Usuario.findById(termino);
+        if (guardiaBD) {
+            console.log('esto es sin fechas');
+            const turnosBD = await Turnero.find().where({ estado: true })
+                .where({ guardia: termino })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
+            if (!turnosBD) {
+                return res.status(400).json({
+                    msg: `no hay coincidencias`
+                });
+            }
+            return res.json({
+                total: turnosBD.length,
+                results: (turnosBD) ? [turnosBD] : []
+            })
+        }
+        return res.status(400).json({
+            msg: `no hay coincidencias`
+        });
+     
+
+    }
+
+    return res.status(400).json({
+        msg: `proporcione un termino válido`
+    });
+
 }
 
 
@@ -190,29 +242,32 @@ const obtenerTotales = async (termino = '', req,  res = response) => {
 const totales = (req, res = response) => {
 
     const { coleccion, termino } = req.params;
-  
+
     /*if (!coleccionesPermitidas.includes(coleccion)) {
   
       return res.status(400).json({
         msg: `las colecciones permitidas son: ${coleccionesPermitidas}`
       })
     }*/
-  
-    switch (coleccion) {
-      case 'totales':
-        obtenerTotales(termino, req, res);
-        break;
-      case 'aCliente':
-        agregarCliente(termino, req, res);
-        break;
 
-      default:
-        res.status(500).json({
-          msg: 'busqueda incompleta!!!'
-        })
+    switch (coleccion) {
+        case 'totales':
+            obtenerTotales(termino, req, res);
+            break;
+        case 'aCliente':
+            agregarCliente(termino, req, res);
+            break;
+        case 'rptTurnos':
+            rptTurnos(termino, req, res);
+            break;
+
+        default:
+            res.status(500).json({
+                msg: 'busqueda incompleta!!!'
+            })
     }
-  }
-  
+}
+
 
 
 

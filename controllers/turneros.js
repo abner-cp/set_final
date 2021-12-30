@@ -205,6 +205,56 @@ const eliminarTurnero = async (req, res = response) => {
   res.json(turnoBorrado);
 }
 
+//guardia añade observacion al turno
+const addObs = async (id, req, res = response) => {
+ const {observacion} = req.body;
+ const turnero = await Turnero.findById(id);
+ const user1 = await Usuario.findById(turnero.guardia);
+ const user2 = await Usuario.findById(req.usuario._id);
+ if(!user1._id.equals(user2._id)){
+   return res.status(400).json({
+     msg: `Acceso denegado/ Guardia no corresponde`
+   });
+ }
+
+ if(!turnero){
+   return res.status(400).json({
+     msg: `El turno no existe`
+   });
+ }
+const turno = await Turno.findById(turnero.turno);
+if(turnero.estado == false){
+ return res.status(400).json({
+   msg: `EL turno ya caducó`
+ });
+}
+if(!turnero.encurso == true){
+ return res.status(400).json({
+   msg: `EL turno NO está en CURSO!!!`
+ });
+}
+
+const addObs = await Turnero.findByIdAndUpdate(id, {
+  $push: { observacion },
+});
+
+ res.json(addObs);
+}
+
+//ver observaciones de un turno
+const viewObs = async (id, req, res = response) => {
+
+ const turnero = await Turnero.findById(id);
+ if(!turnero){
+  return res.status(400).json({
+    msg: `El turno NO existe!!!`
+  });
+ }
+ const obs = turnero.observacion;
+ res.json(obs);
+}
+
+
 const turnos = (req, res = response) => {
 
   const { coleccion, id } = req.params;
@@ -216,6 +266,12 @@ const turnos = (req, res = response) => {
       break;
     case 'out':
       finalizarTurnero(id, req, res);
+      break;
+    case 'obs':
+      addObs(id, req, res);
+      break;
+    case 'viewObs':
+      viewObs(id, req, res);
       break;
    
     default:
