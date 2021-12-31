@@ -237,8 +237,83 @@ const rptTurnos = async (termino = '', req, res = response) => {
     });
 }
 
+const rptTurnosHs = async (termino = '', req, res = response) => {
+    const esMongoID = isValidObjectId(termino);
+
+    if (esMongoID) {
+        const guardiaBD = await Usuario.findById(termino);
+        if (guardiaBD) {
+            console.log('esto es sin fechas');
+            const turnosBD = await Turnero.find()
+                .where({ guardia: termino })
+                .populate('guardia')
+                .populate('turno')
+                .populate('usuario', 'nombre')
+                .populate('cliente', 'nombre')
+                .populate('team', 'nombre');
+            if (!turnosBD) {
+                return res.status(400).json({
+                    msg: `no hay coincidencias`
+                });
+            }
+            return res.json({
+                total: turnosBD.length,
+                results: (turnosBD) ? [turnosBD] : []
+            })
+        }
+        return res.status(400).json({
+            msg: `no hay coincidencias`
+        });
+
+    }
+
+    return res.status(400).json({
+        msg: `proporcione un termino válido`
+    });
+}
+
 
 const rptTeams_guardias = async (termino = '', req, res = response) => {
+    if (termino == 'guardias') {
+        const query = { estado: true };  //solo los teams activos en bd
+
+        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
+            Team.countDocuments(query),
+            Team.find({}, {nombre:1, _id:0, guardias:1}).where(query)
+           
+        ]);
+        return res.json({
+            total,
+            teams
+        });
+    }
+
+    return res.status(400).json({
+        msg: `proporcione termino de busqueda válido!`
+    });
+}
+
+const rptTeams_clientes = async (termino = '', req, res = response) => {
+    if (termino == 'guardias') {
+        const query = { estado: true };  //solo los teams activos en bd
+
+        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
+            Team.countDocuments(query),
+            Team.find({}, {nombre:1, _id:0, clientes:1}).where(query)
+           
+        ]);
+        return res.json({
+            total,
+            teams
+        });
+    }
+
+    return res.status(400).json({
+        msg: `proporcione termino de busqueda válido!`
+    });
+}
+
+const rptTeams_turnos = async (termino = '', req, res = response) => {
     if (termino == 'guardias') {
         const query = { estado: true };  //solo los teams activos en bd
 
@@ -282,8 +357,17 @@ const totales = (req, res = response) => {
         case 'rptTurnos':
             rptTurnos(termino, req, res);
             break;
-        case 'rptTeams':
+        case 'rptTurnosHs':
+            rptTurnosHs(termino, req, res);
+            break;
+        case 'rptTeamsGs':
             rptTeams_guardias(termino, req, res);
+            break;
+        case 'rptTeamsCl':
+            rptTeams_clientes(termino, req, res);
+            break;
+        case 'rptTeamsTn':
+            rptTeams_turnos(termino, req, res);
             break;
 
         default:
