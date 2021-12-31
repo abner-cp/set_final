@@ -3,8 +3,8 @@ const PDF = require('pdfkit-construct');
 const fs = require('fs');
 
 const { response } = require("express");
-const { Turno, Usuario, Team, Turnero } = require("../models");
-const { listeners, events, discriminator } = require('../models/usuario');
+const { Turno, Usuario, Team, Turnero, Cliente } = require("../models");
+const { listeners, events, discriminator, countDocuments } = require('../models/usuario');
 const { set, isValidObjectId } = require('mongoose');
 
 
@@ -175,14 +175,17 @@ const obtenerTotales = async (termino = '', req, res = response) => {
     if (termino == 'all') {
         const totalEquipos = await Team.countDocuments();
         const totalGuardias = await Usuario.countDocuments({ rol: '60b7fbd0c86aab40dc8b5e9b', estado: true });
+        const total_administradores = await Usuario.countDocuments({ rol: '60b7fb45c86aab40dc8b5e99', estado: true });
         const totalSupervisores = await Usuario.countDocuments({ rol: '60b7fbeec86aab40dc8b5e9c', estado: true });
+        const total_clientes = await Cliente.countDocuments({ estado: true });
         console.log(totalGuardias);
-        return res.json({ totalEquipos, totalGuardias, totalSupervisores });
+        return res.json({ totalEquipos, totalGuardias, total_administradores, totalSupervisores, total_clientes });
     }
     return res.status(400).json({
         msg: `proporcione termino de busqueda`
     });
 }
+
 const rptTurnos = async (termino = '', req, res = response) => {
     const esMongoID = isValidObjectId(termino);
     const { desde, hasta } = req.body;
@@ -206,7 +209,7 @@ const rptTurnos = async (termino = '', req, res = response) => {
         const guardiaBD = await Usuario.findById(termino);
         if (guardiaBD) {
             console.log('esto es sin fechas');
-            const turnosBD = await Turnero.find().where({ estado: true })
+            const turnosBD = await Turnero.find()
                 .where({ guardia: termino })
                 .populate('guardia')
                 .populate('turno')
@@ -226,14 +229,33 @@ const rptTurnos = async (termino = '', req, res = response) => {
         return res.status(400).json({
             msg: `no hay coincidencias`
         });
-     
 
     }
 
     return res.status(400).json({
         msg: `proporcione un termino válido`
     });
+}
 
+
+const rptTeams_guardias = async (termino = '', req, res = response) => {
+    if (termino == 'guardias') {
+        const query = { estado: true };  //solo los teams activos en bd
+
+        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
+            Team.countDocuments(query),
+            Team.find({}, {nombre:1, _id:0, guardias:1}).where(query)
+           
+        ]);
+        return res.json({
+            total,
+            teams
+        });
+    }
+
+    return res.status(400).json({
+        msg: `proporcione termino de busqueda válido!`
+    });
 }
 
 
@@ -259,6 +281,9 @@ const totales = (req, res = response) => {
             break;
         case 'rptTurnos':
             rptTurnos(termino, req, res);
+            break;
+        case 'rptTeams':
+            rptTeams_guardias(termino, req, res);
             break;
 
         default:

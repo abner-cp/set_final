@@ -8,7 +8,7 @@ const { guardias } = require("./teams");
 //obtenerTeams- páginado- total- populate
 const obtenerTurneros = async (req = request, res = response) => {
   const { limite = 16, desde = 0 } = req.query;
-  const query = { estado: true };  //solo los turneros activos en bd
+ const query = { estado: true };  //solo los turneros activos en bd
 
   const [total, turnos] = await Promise.all([ //envío arreglo, demora menos 
     Turnero.countDocuments(query),

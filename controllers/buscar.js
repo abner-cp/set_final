@@ -130,14 +130,12 @@ const buscarSupervisor = async (termino = '', res = response) => {
 }
 
 
-const buscarTurnos = async (termino = '',req, res = response) => {
+const buscarTurnos = async (termino = '', req, res = response) => {
     const esMongoID = isValidObjectId(termino);
-    const {desde, hasta} = req.body;
 
     if (esMongoID) {
         const guardiaBD = await Usuario.findById(termino);
         if (guardiaBD) {
-            console.log('esto es sin fechas');
             const turnosBD = await Turnero.find().where({ estado: true })
                 .where({ guardia: termino })
                 .populate('guardia')
@@ -172,7 +170,6 @@ const buscarTurnos = async (termino = '',req, res = response) => {
                 results: (turnosBD) ? [turnosBD] : []
             })
         }
-
     }
 
     return res.status(400).json({
@@ -245,31 +242,31 @@ const buscarClientes2 = async (termino = '', res = response) => {
         msg: `ID invalida`
     });
 
-   /* const userMessage = await Team.aggregate(
-        [
-            {
-                $loolup:
-                {
-                    from: 'clientes',
-                    localField: 'clientes',
-                    foreignField: '_id',
-                    as: 'userMessage'
-                }
-            },
-            {$unwind: "$userMessage"},
-            { $match: { _id: ObjectId (termino) } },
-
-            {
-                $project:
-                {
-                    name: '$userMessage.nombre',
-                    segundoNombre: '$userMessage.empresa',
-                }
-            },
-        ]
-    )
-    userMessage.map(() => { })
-    return userMessage;*/
+    /* const userMessage = await Team.aggregate(
+         [
+             {
+                 $loolup:
+                 {
+                     from: 'clientes',
+                     localField: 'clientes',
+                     foreignField: '_id',
+                     as: 'userMessage'
+                 }
+             },
+             {$unwind: "$userMessage"},
+             { $match: { _id: ObjectId (termino) } },
+ 
+             {
+                 $project:
+                 {
+                     name: '$userMessage.nombre',
+                     segundoNombre: '$userMessage.empresa',
+                 }
+             },
+         ]
+     )
+     userMessage.map(() => { })
+     return userMessage;*/
 }
 
 
