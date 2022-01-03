@@ -9,7 +9,7 @@ const validarClienteTeams = async(req, res, next) => {
      
      const team = await Team.findById(id);
      if (team.clientes.includes(cliente)) {
-          throw new Error(`El guardia: ${datoCliente.nombre} ${datoCliente.rut}, ya existe...`);
+          throw new Error(`El cliente: ${datoCliente.nombre} ${datoCliente.rut}, ya existe...`);
      }
     next();
 }

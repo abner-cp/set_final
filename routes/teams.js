@@ -56,7 +56,7 @@ router.put('/:coleccion/:id', [
     validarJWT,
     check('id', 'NO es un id mongo válido!!!').isMongoId(),
     check('id').custom(existeTeamById),
-    validarGuardiaTeams,
+    //validarGuardiaTeams,
     validarCampos
 ], guardias);
 //borrar guardia a team -privado- con token valido
@@ -72,16 +72,10 @@ router.put('/:coleccion/:cliente/:id', [
     validarJWT,
     check('id', 'NO es un id mongo válido!!!').isMongoId(),
     check('id').custom(existeTeamById),
-    validarClienteTeams,
+  //  validarClienteTeams,
     validarCampos
 ], guardias);
-//borrar cliente a team -privado- con token valido
-router.delete('/:coleccion/:cliente/:id', [
-    validarJWT,
-    check('id', 'NO es un id mongo válido!!!').isMongoId(),
-    check('id').custom(existeTeamById),
-    validarCampos
-], guardias);
+
 
 
 

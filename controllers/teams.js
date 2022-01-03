@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Team, Usuario } = require("../models");
+const { Team, Usuario, Cliente } = require("../models");
 
 
 
@@ -107,6 +107,13 @@ const agregarGuardias = async (id, req, res = response) => {
     });
   }
 
+  const datoGuardia = await Usuario.findById(guardia);
+     
+  const team = await Team.findById(id);
+  if (team.guardias.includes(guardia)) {
+       throw new Error(`El guardia: ${datoGuardia.nombre} ${datoGuardia.apellido}, ya existe...`);
+  }
+
   const asignarGuardia = await Team.findByIdAndUpdate(id, {
     $push: { guardias: guardia },
   });
@@ -141,6 +148,13 @@ const agregarCliente = async (id, req, res = response) => {
     return res.status(400).json({
       msg: `El cliente no es válido!`
     });
+  }
+
+  const datoCliente = await Cliente.findById(cliente);
+     
+  const team = await Team.findById(id);
+  if (team.clientes.includes(cliente)) {
+       throw new Error(`El cliente: ${datoCliente.nombre} ${datoCliente.rut}, ya existe...`);
   }
 
   const asignarCliente = await Team.findByIdAndUpdate(id, {
