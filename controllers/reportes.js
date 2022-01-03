@@ -6,6 +6,8 @@ const { response } = require("express");
 const { Turno, Usuario, Team, Turnero, Cliente } = require("../models");
 const { listeners, events, discriminator, countDocuments } = require('../models/usuario');
 const { set, isValidObjectId } = require('mongoose');
+const { count } = require('console');
+
 
 
 
@@ -275,17 +277,18 @@ const rptTurnosHs = async (termino = '', req, res = response) => {
 
 const rptTeams_guardias = async (termino = '', req, res = response) => {
     if (termino == 'guardias') {
-        const query = { estado: true };  //solo los teams activos en bd
-
-        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
-            Team.countDocuments(query),
-            Team.find({}, {nombre:1, _id:0, guardias:1}).where(query)
-           
-        ]);
+        const result = await Team.aggregate([
+            {
+               $project: {
+                  nombre: 1,
+                  total_guardias: { $cond: { if: { $isArray: "$guardias" }, then: { $size: "$guardias" }, else: "NA"} }
+               }
+            }
+         ] )
         return res.json({
-            total,
-            teams
+            result
         });
+        
     }
 
     return res.status(400).json({
@@ -294,18 +297,19 @@ const rptTeams_guardias = async (termino = '', req, res = response) => {
 }
 
 const rptTeams_clientes = async (termino = '', req, res = response) => {
-    if (termino == 'guardias') {
-        const query = { estado: true };  //solo los teams activos en bd
-
-        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
-            Team.countDocuments(query),
-            Team.find({}, {nombre:1, _id:0, clientes:1}).where(query)
-           
-        ]);
+    if (termino == 'clientes') {
+        const result = await Team.aggregate([
+            {
+               $project: {
+                  nombre: 1,
+                  total_clientes: { $cond: { if: { $isArray: "$clientes" }, then: { $size: "$clientes" }, else: "NA"} }
+               }
+            }
+         ] )
         return res.json({
-            total,
-            teams
+            result
         });
+        
     }
 
     return res.status(400).json({
@@ -314,17 +318,22 @@ const rptTeams_clientes = async (termino = '', req, res = response) => {
 }
 
 const rptTeams_turnos = async (termino = '', req, res = response) => {
-    if (termino == 'guardias') {
-        const query = { estado: true };  //solo los teams activos en bd
-
-        const [total, teams] = await Promise.all([ //envío arreglo, demora menos 
-            Team.countDocuments(query),
-            Team.find({}, {nombre:1, _id:0, guardias:1}).where(query)
-           
-        ]);
+    if (termino == 'turnos') {
+        const resultado = await Turnero.aggregate(
+            [
+                {
+                    $lookup:
+                    {
+                        from: "teams",
+                        localField: "team",
+                        foreignField: "_id",
+                       as: "turnos_team"  
+                    }
+                }
+            ]
+        )
         return res.json({
-            total,
-            teams
+           resultado
         });
     }
 
